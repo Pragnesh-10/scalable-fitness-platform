@@ -2,12 +2,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '../lib/store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: '🏠', label: 'Dashboard' },
   { href: '/workouts', icon: '🏋️', label: 'Log Workout' },
-  { href: '/analytics', icon: '📊', label: 'Analytics' },
   { href: '/plans', icon: '📋', label: 'My Plans' },
   { href: '/community', icon: '👥', label: 'Community' },
   { href: '/profile', icon: '👤', label: 'Profile' },
@@ -15,48 +14,58 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user, logout, loadFromStorage } = useAuthStore();
+  const [user, setUser] = useState<any>(null);
 
-  useEffect(() => { loadFromStorage(); }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
 
   return (
-    <aside className="sidebar">
-      {/* Logo */}
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">⚡</div>
-        <span className="sidebar-logo-text">
-          <span className="gradient-text">FitPulse</span>
-        </span>
+    <aside className="w-64 bg-white border-r h-screen fixed left-0 top-0 overflow-y-auto flex flex-col p-4 shadow-sm z-50">
+      <div className="flex items-center mb-8 px-2 py-4">
+        <span className="text-3xl mr-2">⚡</span>
+        <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-cyan-400">FitPulse</h1>
       </div>
 
-      {/* Nav */}
-      <nav style={{ flex: 1 }}>
-        {NAV_ITEMS.map(item => (
-          <Link key={item.href} href={item.href} className={`nav-item ${pathname.startsWith(item.href) ? 'active' : ''}`}>
-            <span className="nav-icon">{item.icon}</span>
+      <nav className="flex-1 space-y-1">
+        {NAV_ITEMS.map((item) => (
+          <Link key={item.href} href={item.href} className={`flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${pathname.startsWith(item.href) ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+            <span className="mr-3 text-xl">{item.icon}</span>
             {item.label}
           </Link>
         ))}
+
+        {user?.role === 'coach' && (
+          <div className="pt-4 mt-4 border-t border-gray-200 space-y-1">
+            <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Coach Tools</p>
+            <Link href="/coach" className={`flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${pathname.startsWith('/coach') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+              <span className="mr-3 text-xl">📝</span>
+              Client Roster
+            </Link>
+          </div>
+        )}
       </nav>
 
-      {/* User Section */}
       {user && (
-        <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1rem', marginTop: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', marginBottom: '0.5rem' }}>
-            <div className="avatar" style={{ width: 36, height: 36, fontSize: '0.9rem', background: 'linear-gradient(135deg, #6C63FF, #4ECDC4)' }}>
-              {user.name.charAt(0).toUpperCase()}
+        <div className="mt-auto pt-4 border-t border-gray-200">
+          <div className="flex items-center px-4 py-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow-md">
+              {user.name?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user.name}
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
-                {user.role === 'coach' ? '🎯 Coach' : '🏃 Member'}
-              </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+              <p className="text-xs text-gray-500 capitalize">{user.role}</p>
             </div>
           </div>
-          <button id="sidebar-logout" onClick={logout} className="nav-item" style={{ color: '#FF6B6B', width: '100%' }}>
-            <span className="nav-icon">🚪</span>
+          <button onClick={handleLogout} className="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors">
+            <span className="mr-3 text-lg">🚪</span>
             Sign Out
           </button>
         </div>
