@@ -1,201 +1,127 @@
 'use client';
-import { useEffect, useState } from 'react';
-import api from '../../lib/api';
 
-const STUB_GROUPS = [
-  { _id: 'g1', groupName: 'Morning Warriors', description: 'Early risers who train before sunrise', member_count: 142, is_member: false },
-  { _id: 'g2', groupName: 'Iron Club', description: 'Dedicated strength and powerlifting community', member_count: 89, is_member: true },
-  { _id: 'g3', groupName: 'Run Collective', description: 'Runners of all levels — 5K to ultramarathon', member_count: 234, is_member: false },
-];
-const STUB_CHALLENGES = [
-  { _id: 'c1', challengeName: '10K Steps Daily', description: 'Hit 10,000 steps every day for 30 days', goalType: 'steps', goalValue: 10000, is_joined: true, participant_count: 318, endDate: new Date(Date.now() + 15 * 86400000).toISOString() },
-  { _id: 'c2', challengeName: '500 Calorie Burn', description: 'Burn 500+ calories per workout session', goalType: 'calories', goalValue: 500, is_joined: false, participant_count: 156, endDate: new Date(Date.now() + 7 * 86400000).toISOString() },
-  { _id: 'c3', challengeName: '30-Day Workout Streak', description: 'Complete a workout every single day', goalType: 'workouts', goalValue: 30, is_joined: false, participant_count: 412, endDate: new Date(Date.now() + 25 * 86400000).toISOString() },
-];
-const STUB_LEADERBOARD = [
-  { name: 'Priya K.', workoutCount: 24, totalCalories: 9840 },
-  { name: 'Rahul M.', workoutCount: 21, totalCalories: 8610 },
-  { name: 'Arjun S.', workoutCount: 19, totalCalories: 7980 },
-  { name: 'Sneha P.', workoutCount: 17, totalCalories: 6720 },
-  { name: 'Vikram R.', workoutCount: 15, totalCalories: 5900 },
-];
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
 
-export default function CommunityPage() {
-  const [tab, setTab] = useState<'groups' | 'challenges' | 'leaderboard'>('groups');
-  const [groups, setGroups] = useState(STUB_GROUPS);
-  const [challenges, setChallenges] = useState(STUB_CHALLENGES);
-  const [leaderboard, setLeaderboard] = useState(STUB_LEADERBOARD);
-  const [toast, setToast] = useState('');
-  const [showCreateGroup, setShowCreateGroup] = useState(false);
-  const [groupForm, setGroupForm] = useState({ groupName: '', description: '' });
+export default function Community() {
+  const [activeTab, setActiveTab] = useState<'leaderboard' | 'challenges'>('leaderboard');
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [challenges, setChallenges] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/community/groups').then(r => setGroups(r.data.groups || STUB_GROUPS)).catch(() => {});
-    api.get('/community/challenges').then(r => setChallenges(r.data.challenges || STUB_CHALLENGES)).catch(() => {});
-    api.get('/community/leaderboard').then(r => setLeaderboard(r.data.leaderboard || STUB_LEADERBOARD)).catch(() => {});
-  }, []);
+    fetchData();
+  }, [activeTab]);
 
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
-
-  const joinGroup = async (id: string) => {
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      await api.post(`/community/groups/${id}/join`);
-      setGroups(gs => gs.map(g => g._id === id ? { ...g, is_member: true, member_count: g.member_count + 1 } : g));
-      showToast('🎉 Joined group!');
-    } catch { showToast('Failed to join'); }
+      if (activeTab === 'leaderboard') {
+        const { data } = await api.get('/community/leaderboard');
+        setLeaderboard(data.leaderboard || []);
+      } else {
+        const { data } = await api.get('/community/challenges');
+        setChallenges(data.challenges || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch data', error);
+    }
+    setLoading(false);
   };
 
-  const joinChallenge = async (id: string) => {
+  const handleJoinChallenge = async (challengeId: string) => {
     try {
-      await api.post(`/community/challenges/${id}/join`);
-      setChallenges(cs => cs.map(c => c._id === id ? { ...c, is_joined: true } : c));
-      showToast('⚡ Challenge accepted!');
-    } catch { showToast('Failed to join'); }
-  };
-
-  const createGroup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const { data } = await api.post('/community/groups', groupForm);
-      setGroups(gs => [{ ...data.group, is_member: true, member_count: 1 }, ...gs]);
-      setShowCreateGroup(false);
-      setGroupForm({ groupName: '', description: '' });
-      showToast('🎉 Group created!');
-    } catch { showToast('Failed to create'); }
+      await api.post(`/community/challenges/${challengeId}/join`);
+      fetchData(); // Refresh to show "Joined"
+    } catch (error) {
+      console.error('Failed to join challenge', error);
+    }
   };
 
   return (
-    <div>
-      {toast && (
-        <div className="toast-container">
-          <div className={`toast ${toast.includes('Failed') ? 'error' : 'success'}`}>{toast}</div>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h2 className="text-3xl font-bold mb-8 text-gray-900">Community Hub</h2>
+
+      <div className="flex space-x-4 border-b border-gray-200 mb-6">
+        <button 
+          className={`pb-2 px-4 font-medium ${activeTab === 'leaderboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+          onClick={() => setActiveTab('leaderboard')}
+        >
+          Global Leaderboard
+        </button>
+        <button 
+          className={`pb-2 px-4 font-medium ${activeTab === 'challenges' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+          onClick={() => setActiveTab('challenges')}
+        >
+          Challenges
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center p-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
-      )}
-
-      <div className="page-header">
-        <h1 className="page-title">👥 Community</h1>
-        <p className="page-subtitle">Connect, compete, and grow together</p>
-      </div>
-
-      <div className="tab-nav" style={{ marginBottom: '2rem', maxWidth: 400 }}>
-        {(['groups', 'challenges', 'leaderboard'] as const).map(t => (
-          <button key={t} className={`tab-btn ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
-            {t === 'groups' ? '👥' : t === 'challenges' ? '🏆' : '🥇'} {t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      {/* Groups */}
-      {tab === 'groups' && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowCreateGroup(!showCreateGroup)}>
-              + Create Group
-            </button>
+      ) : activeTab === 'leaderboard' ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-indigo-50 px-6 py-4 border-b border-gray-200">
+             <h3 className="text-lg font-semibold text-indigo-900">Top Athletes (Last 30 Days)</h3>
           </div>
-          {showCreateGroup && (
-            <div className="card" style={{ marginBottom: '1.5rem', animation: 'slideUp 0.3s ease' }}>
-              <form onSubmit={createGroup} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Group Name</label>
-                  <input className="form-input" placeholder="e.g. Sunrise Runners" required
-                    value={groupForm.groupName} onChange={e => setGroupForm(f => ({ ...f, groupName: e.target.value }))} />
+          <ul className="divide-y divide-gray-100">
+            {leaderboard.map((user: any, index: number) => (
+              <li key={user._id} className="p-4 flex items-center hover:bg-gray-50 transition-colors">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 ${index === 0 ? 'bg-yellow-100 text-yellow-600' : index === 1 ? 'bg-gray-200 text-gray-600' : index === 2 ? 'bg-orange-100 text-orange-600' : 'text-gray-400'}`}>
+                  #{index + 1}
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Description</label>
-                  <textarea className="form-input" placeholder="What's this group about?" rows={2}
-                    value={groupForm.description} onChange={e => setGroupForm(f => ({ ...f, description: e.target.value }))} />
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{user.name}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <button type="submit" className="btn btn-primary btn-sm">Create Group</button>
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowCreateGroup(false)}>Cancel</button>
+                <div className="text-right">
+                  <p className="font-bold text-indigo-600">{user.workoutCount} <span className="text-sm font-normal text-gray-500">workouts</span></p>
+                  <p className="text-sm text-gray-500">{user.totalCalories} kcal</p>
                 </div>
-              </form>
-            </div>
-          )}
-          <div className="grid-3">
-            {groups.map(g => (
-              <div key={g._id} className="card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '0.875rem' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, #6C63FF, #4ECDC4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>
-                    👥
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{g.groupName}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{g.member_count} members</div>
-                  </div>
-                </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: 1.5 }}>{g.description}</p>
-                {g.is_member ? (
-                  <span className="badge badge-success" style={{ fontSize: '0.78rem' }}>✅ Joined</span>
-                ) : (
-                  <button className="btn btn-primary btn-sm" onClick={() => joinGroup(g._id)}>Join Group</button>
-                )}
-              </div>
+              </li>
             ))}
-          </div>
+            {leaderboard.length === 0 && <p className="p-6 text-center text-gray-500">No data available for the leaderboard yet.</p>}
+          </ul>
         </div>
-      )}
-
-      {/* Challenges */}
-      {tab === 'challenges' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {challenges.map(c => (
-            <div key={c._id} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'linear-gradient(135deg, #FF6B6B20, #FFE66D20)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', flexShrink: 0 }}>
-                {c.goalType === 'steps' ? '👣' : c.goalType === 'calories' ? '🔥' : '🏋️'}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.4rem' }}>
-                  <span style={{ fontWeight: 700 }}>{c.challengeName}</span>
-                  {c.is_joined && <span className="badge badge-success">✅ Active</span>}
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {challenges.map((challenge: any) => (
+            <div key={challenge._id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{challenge.challengeName}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{challenge.description || `Goal: ${challenge.goalValue} ${challenge.goalType}`}</p>
                 </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>{c.description}</p>
-                <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-                  <span>🎯 Goal: {c.goalValue.toLocaleString()} {c.goalType}</span>
-                  <span>👥 {c.participant_count} participants</span>
-                  <span>⏰ Ends {new Date(c.endDate).toLocaleDateString()}</span>
-                </div>
+                <span className="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                  {challenge.participant_count || 0} Joined
+                </span>
               </div>
-              {!c.is_joined && (
-                <button className="btn btn-primary btn-sm" style={{ flexShrink: 0 }} onClick={() => joinChallenge(c._id)}>Accept →</button>
+              
+              <div className="text-sm text-gray-600 mb-6 flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Ends {new Date(challenge.endDate).toLocaleDateString()}
+              </div>
+              
+              {challenge.is_joined ? (
+                <button disabled className="w-full bg-gray-100 text-gray-500 font-medium py-2 px-4 rounded-lg border border-gray-200 cursor-not-allowed">
+                  Participant Joined
+                </button>
+              ) : (
+                <button 
+                  onClick={() => handleJoinChallenge(challenge._id)}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors border border-transparent"
+                >
+                  Join Challenge
+                </button>
               )}
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Leaderboard */}
-      {tab === 'leaderboard' && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <h2 style={{ fontWeight: 700 }}>🥇 Monthly Leaderboard</h2>
-            <span className="badge badge-warning">Last 30 Days</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {leaderboard.map((entry: any, i: number) => (
-              <div key={i} className="leaderboard-item">
-                <div className={`rank-badge ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other'}`}>
-                  {i + 1}
-                </div>
-                <div className="avatar" style={{ width: 40, height: 40, fontSize: '0.9rem', background: 'linear-gradient(135deg, #6C63FF, #4ECDC4)' }}>
-                  {entry.name?.charAt(0)}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{entry.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    {entry.workoutCount} workouts · {(entry.totalCalories || 0).toLocaleString()} kcal burned
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'var(--primary-light)' }}>
-                    {entry.workoutCount}
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>workouts</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {challenges.length === 0 && (
+             <div className="col-span-full bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center text-gray-500">
+               No active challenges available right now. Check back later!
+             </div>
+          )}
         </div>
       )}
     </div>

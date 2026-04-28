@@ -17,7 +17,7 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { name, role } = req.body;
-    const profileFields = ['age', 'weight', 'height', 'fitnessGoals', 'experienceLevel', 'preferences'];
+    const profileFields = ['age', 'weight', 'height', 'fitnessGoals', 'experienceLevel', 'preferences', 'deviceConnections'];
     const profileUpdate = {};
     profileFields.forEach(f => { if (req.body[f] !== undefined) profileUpdate[f] = req.body[f]; });
 
