@@ -16,7 +16,10 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-If account creation shows a network error, make sure `frontend/.env.local` points `NEXT_PUBLIC_API_URL` at the Elastic Beanstalk API URL and restart the frontend dev server so Next.js picks up the new value.
+If account creation shows a network error:
+- Create `frontend/.env.local` from `frontend/.env.example`
+- Set `NEXT_PUBLIC_API_URL` to your backend URL (for example `https://api.example.com/api` or your EB URL)
+- Restart the frontend dev server so Next.js picks up the new value
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

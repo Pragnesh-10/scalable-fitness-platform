@@ -10,6 +10,19 @@ const parseCsvEnv = (value) =>
 
 const unique = (values) => [...new Set(values.filter(Boolean))];
 
+const normalizeOrigin = (value) => {
+  if (!value || typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    // Fall back for malformed values that are still usable as host strings.
+    return trimmed.replace(/\/+$/, '');
+  }
+};
+
 const toInteger = (value, fallback) => {
   const parsed = Number.parseInt(value, 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
@@ -26,7 +39,7 @@ const allowedOrigins = unique([
   !isProduction ? 'http://127.0.0.1:3000' : null,
   !isProduction ? 'http://localhost:5173' : null,
   !isProduction ? 'http://127.0.0.1:5173' : null,
-]);
+].map(normalizeOrigin));
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -34,11 +47,13 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
+    const normalizedOrigin = normalizeOrigin(origin);
+
+    if (normalizedOrigin && allowedOrigins.includes(normalizedOrigin)) {
       return callback(null, true);
     }
 
-    return callback(new Error(`CORS policy: ${origin} is not allowed`));
+    return callback(new Error(`CORS policy: ${normalizedOrigin || origin} is not allowed`));
   },
   credentials: true,
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

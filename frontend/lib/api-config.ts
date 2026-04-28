@@ -3,14 +3,27 @@
  * Ensures consistent API URL handling across all components
  */
 
+const normalizeApiBaseUrl = (value?: string): string | null => {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.replace(/\/+$/, '');
+};
+
 // Validate and normalize API base URL
 export const getApiBaseUrl = (): string => {
-  // In browser environment, use environment variable
+  const configuredBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+  if (configuredBaseUrl) return configuredBaseUrl;
+
   if (typeof window !== 'undefined') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+    const hostname = window.location.hostname;
+    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
+    // In production, default to same-origin API if env var is missing.
+    if (!isLocalHost) return `${window.location.origin}/api`;
   }
-  // Server-side (SSR): use environment variable
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+
+  // Local development fallback.
+  return 'http://localhost:5001/api';
 };
 
 // Construct full API endpoint URLs
