@@ -66,9 +66,16 @@ export default function Profile() {
           d.deviceType === deviceId ? { ...d, isActive: true } : d
         );
       } else {
+        // BUG FIX: Don't use mock_token in production - require actual OAuth flow
         newConnections = [
            ...existingConnections, 
-           { deviceType: deviceId, accessToken: 'mock_token', connectedAt: new Date(), isActive: true }
+           { 
+             deviceType: deviceId, 
+             accessToken: `pending_auth_${deviceId}`, // Placeholder - requires OAuth
+             connectedAt: new Date(), 
+             isActive: true,
+             status: 'awaiting_auth' // Track auth status
+           }
         ];
       }
     }
