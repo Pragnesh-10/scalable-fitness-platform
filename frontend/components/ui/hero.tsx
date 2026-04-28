@@ -85,7 +85,6 @@ export default function ShaderShowcase() {
         className="absolute inset-0 w-full h-full opacity-60"
         colors={["#000000", "#ffffff", "#6C63FF", "#FF6B6B"]}
         speed={0.2}
-        wireframe={true}
         style={{ backgroundColor: "transparent" }}
       />
 
