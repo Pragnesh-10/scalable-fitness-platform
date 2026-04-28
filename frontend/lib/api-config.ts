@@ -33,10 +33,24 @@ const upgradeToHttpsWhenNeeded = (url: string): string => {
   return url.replace(/^http:\/\//, 'https://');
 };
 
+const rewriteLocalhostForCurrentHost = (url: string): string => {
+  if (typeof window === 'undefined') return url;
+  const currentHost = window.location.hostname;
+  if (!currentHost) return url;
+  if (currentHost === 'localhost' || currentHost === '127.0.0.1') return url;
+
+  // If frontend is opened via LAN/private host, "localhost" points to the wrong machine.
+  return url
+    .replace('://localhost:', `://${currentHost}:`)
+    .replace('://127.0.0.1:', `://${currentHost}:`);
+};
+
 // Validate and normalize API base URL
 export const getApiBaseUrl = (): string => {
   const configuredBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
-  if (configuredBaseUrl) return upgradeToHttpsWhenNeeded(configuredBaseUrl);
+  if (configuredBaseUrl) {
+    return upgradeToHttpsWhenNeeded(rewriteLocalhostForCurrentHost(configuredBaseUrl));
+  }
 
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
@@ -54,6 +68,10 @@ export const getApiBaseUrl = (): string => {
   }
 
   // Local development fallback.
+  if (typeof window !== 'undefined') {
+    const currentHost = window.location.hostname || 'localhost';
+    return `http://${currentHost}:5001/api`;
+  }
   return 'http://localhost:5001/api';
 };
 
@@ -100,7 +118,7 @@ export const apiEndpoints = {
 };
 
 // Validate API response structure
-export const isValidApiResponse = (data: any): boolean => {
+export const isValidApiResponse = (data: unknown): boolean => {
   return data !== null && typeof data === 'object';
 };
 

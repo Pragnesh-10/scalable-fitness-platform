@@ -94,6 +94,20 @@ app.get('/health', (req, res) => {
 });
 
 // ============ API ROUTES ============
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    message: 'FitPulse API is running',
+    endpoints: {
+      auth: ['/api/auth/register', '/api/auth/login', '/api/auth/logout', '/api/auth/me'],
+      user: ['/api/user/profile', '/api/user/stats'],
+      workouts: ['/api/workouts'],
+      analytics: ['/api/analytics/weekly', '/api/analytics/monthly'],
+      plans: ['/api/plans/active', '/api/plans/generate'],
+      community: ['/api/community/leaderboard', '/api/community/challenges'],
+      coach: ['/api/coach/clients', '/api/coach/assign-plan'],
+    },
+  });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/workouts', workoutRoutes);

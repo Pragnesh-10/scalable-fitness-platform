@@ -15,7 +15,7 @@ interface AuthStore {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: any) => Promise<void>;
+  register: (data: { name: string; email: string; password: string; role?: string; fitnessGoals?: string }) => Promise<void>;
   logout: () => void;
   loadFromStorage: () => void;
 }
@@ -53,7 +53,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       localStorage.setItem('fitpulse_token', data.token);
       localStorage.setItem('fitpulse_user', JSON.stringify(data.user));
       set({ user: data.user, token: data.token });
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw error;
     } finally {
       set({ isLoading: false });
