@@ -9,7 +9,7 @@ export default function Home() {
             <ShaderShowcase />
             
             {/* Features & Images Section */}
-            <section className="relative z-10 container mx-auto px-6 py-24 -mt-32">
+            <section className="relative z-10 container mx-auto px-6 py-24">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
                         <h2 className="text-4xl font-bold tracking-tight">Train Hard, Track Smart</h2>
