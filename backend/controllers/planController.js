@@ -1,96 +1,83 @@
-const { query } = require('../config/database');
+const Plan = require('../models/Plan');
+const Profile = require('../models/Profile');
 
-// Rule-based plan generator
-const generatePlanSchedule = (goal, level, durationWeeks) => {
-  const daysPerWeek = { beginner: 3, intermediate: 5, advanced: 6 }[level] || 3;
-
-  const goalWorkouts = {
-    fat_loss: ['HIIT Cardio', 'Circuit Training', 'Running', 'Jump Rope', 'Cycling'],
-    muscle_gain: ['Chest & Triceps', 'Back & Biceps', 'Legs & Shoulders', 'Full Body Strength', 'Arms & Core'],
-    endurance: ['Long Run', 'Cycling', 'Swimming', 'Rowing', 'Tempo Run'],
-    general_fitness: ['Full Body Workout', 'Cardio Session', 'Strength Training', 'Yoga & Flexibility', 'HIIT'],
-    weight_maintenance: ['Moderate Cardio', 'Light Strength', 'Yoga', 'Walking', 'Pilates'],
-  };
-
-  const workoutPool = goalWorkouts[goal] || goalWorkouts.general_fitness;
-  const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const restDays = allDays.length - daysPerWeek;
-
-  // Distribute workout days evenly
-  const schedule = {};
-  for (let week = 1; week <= durationWeeks; week++) {
-    schedule[`week_${week}`] = allDays.map((day, idx) => {
-      const isRest = idx >= daysPerWeek;
-      return {
-        day,
-        type: isRest ? 'Rest' : workoutPool[idx % workoutPool.length],
-        duration: isRest ? 0 : (level === 'beginner' ? 30 : level === 'intermediate' ? 45 : 60),
-        intensity: isRest ? null : (level === 'beginner' ? 'Low' : level === 'intermediate' ? 'Moderate' : 'High'),
-      };
-    });
-  }
-
-  return { schedule, daysPerWeek, restDays };
+const PLAN_TEMPLATES = {
+  fat_loss: {
+    beginner: ['HIIT Cardio 30min', 'Circuit Training', 'Rest', 'Jump Rope 30min', 'Rest', 'Light Run', 'Rest'],
+    intermediate: ['HIIT 45min', 'Strength Circuit', 'Cardio 40min', 'Rest', 'HIIT 45min', 'Full Body', 'Rest'],
+    advanced: ['HIIT 60min', 'Strength + Cardio', 'HIIT 60min', 'Rest', 'Full Body HIIT', 'Cardio 60min', 'Active Rest'],
+  },
+  muscle_gain: {
+    beginner: ['Chest & Triceps', 'Rest', 'Back & Biceps', 'Rest', 'Legs & Shoulders', 'Rest', 'Rest'],
+    intermediate: ['Chest & Triceps', 'Back & Biceps', 'Rest', 'Legs', 'Shoulders & Arms', 'Rest', 'Rest'],
+    advanced: ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Full Body', 'Rest'],
+  },
+  endurance: {
+    beginner: ['Easy Run 20min', 'Rest', 'Cycling 30min', 'Rest', 'Tempo Run 20min', 'Rest', 'Rest'],
+    intermediate: ['Tempo Run 40min', 'Cross-train', 'Long Run 50min', 'Rest', 'Interval Run', 'Long Ride', 'Rest'],
+    advanced: ['Tempo 60min', 'Speed Work', 'Long Run 90min', 'Cross-train', 'Interval Run', 'Long Ride 120min', 'Rest'],
+  },
+  general_fitness: {
+    beginner: ['Full Body 30min', 'Rest', 'Cardio 20min', 'Rest', 'Yoga & Stretch', 'Rest', 'Rest'],
+    intermediate: ['Strength 45min', 'Cardio 30min', 'Rest', 'Full Body 45min', 'Cardio 30min', 'Rest', 'Rest'],
+    advanced: ['Strength 60min', 'HIIT 45min', 'Cardio 60min', 'Strength 60min', 'HIIT 45min', 'Long Cardio', 'Rest'],
+  },
 };
 
-// POST /plans/generate
+const RECOMMENDATIONS = {
+  fat_loss: ['Keep calorie deficit of 300-500 kcal/day', 'Prioritize protein (1.6g/kg body weight)', 'Stay hydrated — 3L+ water daily', 'Get 7-9 hours of sleep'],
+  muscle_gain: ['Eat in a 300-500 kcal surplus', 'Consume 2g protein/kg body weight', 'Progressive overload — increase weight weekly', 'Rest 48-72h between same muscle groups'],
+  endurance: ['Build mileage by no more than 10% per week', 'Include recovery runs and rest days', 'Fuel with complex carbs before long runs', 'Monitor heart rate zones during training'],
+  general_fitness: ['Aim for 150 mins moderate activity/week', 'Mix cardio and strength training', 'Track daily steps — target 8,000–10,000', 'Prioritize sleep and recovery'],
+};
+
 const generatePlan = async (req, res) => {
   try {
     const { plan_type, difficulty, duration_weeks = 4 } = req.body;
-    const userId = req.user.id;
+    const profile = await Profile.findOne({ userId: req.user.id });
 
-    // Get user profile
-    const userResult = await query('SELECT fitness_goal, experience_level FROM users WHERE id=$1', [userId]);
-    const user = userResult.rows[0];
+    const goal = plan_type || profile?.fitnessGoals || 'general_fitness';
+    const level = difficulty || profile?.experienceLevel || 'beginner';
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const template = PLAN_TEMPLATES[goal]?.[level] || PLAN_TEMPLATES.general_fitness.beginner;
+    const durations = { beginner: 30, intermediate: 45, advanced: 60 };
 
-    const goal = plan_type || user?.fitness_goal || 'general_fitness';
-    const level = difficulty || user?.experience_level || 'beginner';
+    const schedule = {};
+    for (let w = 1; w <= duration_weeks; w++) {
+      schedule[`week_${w}`] = days.map((day, i) => ({
+        day,
+        type: template[i],
+        duration: template[i] === 'Rest' ? 0 : durations[level],
+        intensity: template[i] === 'Rest' ? null : level,
+      }));
+    }
 
-    const { schedule, daysPerWeek } = generatePlanSchedule(goal, level, duration_weeks);
-
-    // Deactivate previous plans
-    await query('UPDATE plans SET is_active=false WHERE user_id=$1', [userId]);
-
-    const result = await query(
-      `INSERT INTO plans (user_id, plan_type, difficulty, duration_weeks, schedule)
-       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [userId, goal, level, duration_weeks, JSON.stringify(schedule)]
-    );
-
-    res.status(201).json({
-      plan: result.rows[0],
-      summary: { goal, level, daysPerWeek, totalWeeks: duration_weeks },
+    await Plan.updateMany({ userId: req.user.id }, { isActive: false });
+    const plan = await Plan.create({
+      userId: req.user.id,
+      planType: goal,
+      difficulty: level,
+      durationWeeks: duration_weeks,
+      schedule,
+      recommendations: RECOMMENDATIONS[goal] || [],
     });
-  } catch (err) {
-    console.error('Generate plan error:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
+
+    res.status(201).json({ plan, summary: { goal, level, daysPerWeek: template.filter(d => d !== 'Rest').length } });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Plan generation failed' }); }
 };
 
-// GET /plans
 const getPlans = async (req, res) => {
   try {
-    const result = await query(
-      'SELECT * FROM plans WHERE user_id=$1 ORDER BY created_at DESC',
-      [req.user.id]
-    );
-    res.json({ plans: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const plans = await Plan.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json({ plans });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// GET /plans/active
 const getActivePlan = async (req, res) => {
   try {
-    const result = await query(
-      'SELECT * FROM plans WHERE user_id=$1 AND is_active=true ORDER BY created_at DESC LIMIT 1',
-      [req.user.id]
-    );
-    res.json({ plan: result.rows[0] || null });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const plan = await Plan.findOne({ userId: req.user.id, isActive: true }).sort({ createdAt: -1 });
+    res.json({ plan: plan || null });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
 module.exports = { generatePlan, getPlans, getActivePlan };

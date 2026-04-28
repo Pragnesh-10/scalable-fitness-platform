@@ -1,171 +1,111 @@
-const { query } = require('../config/database');
+const { Group, Post, Challenge } = require('../models/Community');
+const User = require('../models/User');
+const Workout = require('../models/Workout');
 
-// GET /groups
 const getGroups = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const result = await query(
-      `SELECT g.*, 
-        CASE WHEN gm.user_id IS NOT NULL THEN true ELSE false END as is_member
-       FROM groups g
-       LEFT JOIN group_members gm ON gm.group_id = g.id AND gm.user_id = $1
-       ORDER BY g.member_count DESC`,
-      [userId]
-    );
-    res.json({ groups: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const groups = await Group.find().populate('createdBy', 'name avatar_url').sort({ createdAt: -1 });
+    const withMembership = groups.map(g => ({
+      ...g.toObject(),
+      is_member: g.members.some(m => m.toString() === req.user.id),
+      member_count: g.members.length,
+    }));
+    res.json({ groups: withMembership });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// POST /groups
 const createGroup = async (req, res) => {
   try {
-    const { name, description } = req.body;
-    const userId = req.user.id;
-
-    const result = await query(
-      'INSERT INTO groups (name, description, created_by, member_count) VALUES ($1,$2,$3,1) RETURNING *',
-      [name, description, userId]
-    );
-    const group = result.rows[0];
-
-    await query('INSERT INTO group_members (group_id, user_id) VALUES ($1,$2)', [group.id, userId]);
+    const group = await Group.create({ ...req.body, createdBy: req.user.id, members: [req.user.id] });
     res.status(201).json({ group });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Create failed' }); }
 };
 
-// POST /groups/:id/join
 const joinGroup = async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    await query('INSERT INTO group_members (group_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [id, userId]);
-    await query('UPDATE groups SET member_count = member_count + 1 WHERE id = $1', [id]);
-    res.json({ message: 'Joined group!' });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    await Group.findByIdAndUpdate(req.params.id, { $addToSet: { members: req.user.id } });
+    res.json({ message: 'Joined!' });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// POST /groups/:id/leave
 const leaveGroup = async (req, res) => {
   try {
-    const { id } = req.params;
-    await query('DELETE FROM group_members WHERE group_id=$1 AND user_id=$2', [id, req.user.id]);
-    await query('UPDATE groups SET member_count = GREATEST(member_count - 1, 0) WHERE id = $1', [id]);
+    await Group.findByIdAndUpdate(req.params.id, { $pull: { members: req.user.id } });
     res.json({ message: 'Left group' });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// GET /groups/:id/posts
 const getGroupPosts = async (req, res) => {
   try {
-    const { id } = req.params;
-    const result = await query(
-      `SELECT p.*, u.name as author_name, u.avatar_url as author_avatar
-       FROM group_posts p JOIN users u ON u.id = p.user_id
-       WHERE p.group_id = $1 ORDER BY p.created_at DESC LIMIT 50`,
-      [id]
-    );
-    res.json({ posts: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const posts = await Post.find({ groupId: req.params.id })
+      .populate('userId', 'name avatar_url').sort({ createdAt: -1 }).limit(50);
+    res.json({ posts });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// POST /groups/:id/posts
 const createPost = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { content } = req.body;
-    const result = await query(
-      'INSERT INTO group_posts (group_id, user_id, content) VALUES ($1,$2,$3) RETURNING *',
-      [id, req.user.id, content]
-    );
-    res.status(201).json({ post: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const post = await Post.create({ groupId: req.params.id, userId: req.user.id, content: req.body.content });
+    await post.populate('userId', 'name avatar_url');
+    res.status(201).json({ post });
+  } catch (err) { res.status(500).json({ error: 'Create failed' }); }
 };
 
-// GET /challenges
 const getChallenges = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const result = await query(
-      `SELECT c.*, cp.current_progress, cp.completed,
-        CASE WHEN cp.user_id IS NOT NULL THEN true ELSE false END as is_joined
-       FROM challenges c
-       LEFT JOIN challenge_participants cp ON cp.challenge_id = c.id AND cp.user_id = $1
-       WHERE c.end_date >= CURRENT_DATE ORDER BY c.start_date`,
-      [userId]
-    );
-    res.json({ challenges: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const challenges = await Challenge.find({ endDate: { $gte: new Date() } })
+      .populate('createdBy', 'name').sort({ startDate: 1 });
+    const withStatus = challenges.map(c => ({
+      ...c.toObject(),
+      is_joined: c.participants.some(p => p.userId?.toString() === req.user.id),
+      participant_count: c.participants.length,
+    }));
+    res.json({ challenges: withStatus });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// POST /challenges
 const createChallenge = async (req, res) => {
   try {
-    const { title, description, goal_type, goal_value, start_date, end_date } = req.body;
-    const result = await query(
-      'INSERT INTO challenges (title, description, goal_type, goal_value, start_date, end_date, created_by) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
-      [title, description, goal_type, goal_value, start_date, end_date, req.user.id]
-    );
-    res.status(201).json({ challenge: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const challenge = await Challenge.create({ ...req.body, createdBy: req.user.id });
+    res.status(201).json({ challenge });
+  } catch (err) { res.status(500).json({ error: 'Create failed' }); }
 };
 
-// POST /challenges/:id/join
 const joinChallenge = async (req, res) => {
   try {
-    const { id } = req.params;
-    await query(
-      'INSERT INTO challenge_participants (challenge_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING',
-      [id, req.user.id]
-    );
+    const challenge = await Challenge.findById(req.params.id);
+    if (!challenge) return res.status(404).json({ error: 'Not found' });
+    const alreadyJoined = challenge.participants.some(p => p.userId?.toString() === req.user.id);
+    if (!alreadyJoined) {
+      challenge.participants.push({ userId: req.user.id });
+      await challenge.save();
+    }
     res.json({ message: 'Joined challenge!' });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
-// GET /leaderboard
 const getLeaderboard = async (req, res) => {
   try {
     const { challenge_id } = req.query;
-    let result;
-
     if (challenge_id) {
-      result = await query(
-        `SELECT u.name, u.avatar_url, cp.current_progress, cp.completed
-         FROM challenge_participants cp JOIN users u ON u.id = cp.user_id
-         WHERE cp.challenge_id = $1 ORDER BY cp.current_progress DESC LIMIT 20`,
-        [challenge_id]
-      );
-    } else {
-      result = await query(
-        `SELECT u.name, u.avatar_url, COUNT(w.id) as workout_count,
-         COALESCE(SUM(w.calories_burned),0) as total_calories
-         FROM users u LEFT JOIN workouts w ON w.user_id = u.id AND w.date >= NOW()-INTERVAL '30 days'
-         GROUP BY u.id, u.name, u.avatar_url ORDER BY workout_count DESC LIMIT 20`
-      );
+      const challenge = await Challenge.findById(challenge_id)
+        .populate('participants.userId', 'name avatar_url');
+      const sorted = [...challenge.participants].sort((a, b) => b.progress - a.progress);
+      return res.json({ leaderboard: sorted });
     }
-
-    res.json({ leaderboard: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    // Global leaderboard by workout count
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const leaderboard = await Workout.aggregate([
+      { $match: { date: { $gte: thirtyDaysAgo } } },
+      { $group: { _id: '$userId', workoutCount: { $sum: 1 }, totalCalories: { $sum: '$caloriesBurned' } } },
+      { $sort: { workoutCount: -1 } },
+      { $limit: 20 },
+      { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
+      { $unwind: '$user' },
+      { $project: { name: '$user.name', avatar_url: '$user.avatar_url', workoutCount: 1, totalCalories: 1 } },
+    ]);
+    res.json({ leaderboard });
+  } catch (err) { res.status(500).json({ error: 'Server error' }); }
 };
 
 module.exports = { getGroups, createGroup, joinGroup, leaveGroup, getGroupPosts, createPost, getChallenges, createChallenge, joinChallenge, getLeaderboard };

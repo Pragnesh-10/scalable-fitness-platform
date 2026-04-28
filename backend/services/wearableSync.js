@@ -1,34 +1,39 @@
 const cron = require('node-cron');
-const { query } = require('../config/database');
+const Metrics = require('../models/Metrics');
+const User = require('../models/User');
+const Profile = require('../models/Profile');
 
-// Simulate wearable data sync (replace with real API calls)
+// Simulate fetching wearable data — replace with real API calls
+const simulateWearableData = (userId) => ({
+  userId,
+  heartRate: Math.floor(Math.random() * 40) + 60,
+  steps: Math.floor(Math.random() * 5000) + 3000,
+  caloriesBurned: Math.floor(Math.random() * 300) + 100,
+  sleepHours: parseFloat((Math.random() * 3 + 5).toFixed(1)),
+  source: 'simulated',
+  date: new Date(),
+});
+
 const syncWearableData = async () => {
-  console.log('🔄 Running wearable sync job...');
+  console.log('🔄 Running wearable sync...');
   try {
-    // TODO: Replace with real Apple HealthKit / Google Fit / Fitbit API calls
-    // Pattern: fetch user tokens → call wearable APIs → upsert into metrics table
-    const usersResult = await query(
-      `SELECT id FROM users WHERE updated_at >= NOW() - INTERVAL '30 days'`
-    );
+    const profiles = await Profile.find({
+      'deviceConnections.isActive': true,
+    }).populate('userId', '_id');
 
-    for (const user of usersResult.rows) {
-      // Placeholder: In production, fetch from HealthKit/Google Fit APIs using stored OAuth tokens
-      console.log(`  Syncing user ${user.id}...`);
+    for (const profile of profiles) {
+      const data = simulateWearableData(profile.userId._id);
+      await Metrics.create(data);
     }
-
-    console.log('✅ Wearable sync completed');
+    console.log(`✅ Synced ${profiles.length} users`);
   } catch (err) {
-    console.error('❌ Wearable sync failed:', err.message);
+    console.error('❌ Sync failed:', err.message);
   }
 };
 
-// Run every 6 hours
 const startWearableSync = () => {
-  cron.schedule('0 */6 * * *', syncWearableData, {
-    scheduled: true,
-    timezone: 'UTC',
-  });
-  console.log('⏰ Wearable sync cron job started (every 6 hours)');
+  cron.schedule('0 */6 * * *', syncWearableData, { scheduled: true, timezone: 'UTC' });
+  console.log('⏰ Wearable sync cron started (every 6h)');
 };
 
 module.exports = { startWearableSync, syncWearableData };
