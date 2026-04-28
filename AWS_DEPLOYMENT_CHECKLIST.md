@@ -13,6 +13,9 @@
 - [ ] Ensure code is pushed to GitHub (main branch)
 - [ ] Copy `.env.production.example` to `.env.production`
 - [ ] Fill in production secrets in `.env.production`
+- [ ] Ensure `JWT_SECRET` is 32+ characters
+- [ ] Set `TRUST_PROXY=true`
+- [ ] Set cookie strategy vars (`AUTH_COOKIE_SAME_SITE`, optional `AUTH_COOKIE_DOMAIN`)
 - [ ] Review `.ebextensions/` configurations
 - [ ] Review `.elasticbeanstalk/config.yml`
 
@@ -42,7 +45,7 @@ chmod +x aws-setup.sh
 # Create the Elastic Beanstalk environment (5-10 min)
 eb create fitpulse-prod \
   --instance-type t3.small \
-  --envvars NODE_ENV=production,PORT=5001
+  --envvars NODE_ENV=production,PORT=5001,TRUST_PROXY=true
 
 # Monitor creation
 eb status
@@ -66,7 +69,9 @@ eb logs
 API_URL=$(eb open --print-url)
 curl $API_URL/health
 
-# Should return: {"status":"OK","timestamp":"..."}
+# Should return readiness status and checks.database: "UP"
+curl $API_URL/health/live
+# Should return: {"status":"UP","service":"fitpulse-api",...}
 ```
 
 ---
@@ -74,9 +79,11 @@ curl $API_URL/health
 ## Post-Deployment Verification
 
 ### Test Core Functionality
-- [ ] Health endpoint: `GET /health` → 200 OK
+- [ ] Liveness endpoint: `GET /health/live` → 200 OK
+- [ ] Readiness endpoint: `GET /health` → 200 OK with `checks.database: "UP"`
 - [ ] Register endpoint: `POST /api/auth/register` → 201 Created
 - [ ] Login endpoint: `POST /api/auth/login` → 200 OK
+- [ ] Logout endpoint: `POST /api/auth/logout` → 200 OK
 - [ ] Protected route (no token): `GET /api/user/profile` → 401 Unauthorized
 - [ ] Protected route (valid token): `GET /api/user/profile` → 200 OK
 - [ ] RBAC (user accessing coach route): `GET /api/coach/clients` → 403 Forbidden
@@ -230,6 +237,8 @@ eb deploy
 - [ ] JWT_SECRET is strong (32+ chars, random)
 - [ ] COACH_REGISTRATION_KEY is kept secret
 - [ ] CORS_ALLOWED_ORIGINS excludes wildcards
+- [ ] TRUST_PROXY is enabled behind load balancer/reverse proxy
+- [ ] Auth cookie flags are safe (`HttpOnly`, `Secure`, `SameSite`)
 - [ ] Rate limiting is enabled and reasonable
 - [ ] MongoDB connection uses strong password
 - [ ] SSL certificate is valid (via CloudFlare or ACM)

@@ -65,12 +65,17 @@ vim .env.production
 ```bash
 NODE_ENV=production
 PORT=5001
+TRUST_PROXY=true
 
 # Get your MongoDB connection string from MongoDB Atlas
 MONGO_URI=mongodb+srv://your_username:your_password@your-cluster.mongodb.net/fitpulse?appName=fitpulse&retryWrites=true&w=majority
 
 # Generate a strong JWT secret
 JWT_SECRET=your-random-256-bit-secret-here
+
+# Secure auth cookie settings
+AUTH_COOKIE_SAME_SITE=none
+AUTH_COOKIE_MAX_AGE_MS=604800000
 
 # Your frontend domain (we'll update this later)
 FRONTEND_URL=https://your-frontend.vercel.app
@@ -162,7 +167,7 @@ cat .elasticbeanstalk/config.yml
 # In backend directory
 eb create fitpulse-prod \
   --instance-type t3.small \
-  --envvars NODE_ENV=production,PORT=5001
+  --envvars NODE_ENV=production,PORT=5001,TRUST_PROXY=true
 ```
 
 **This will:**
@@ -190,6 +195,9 @@ eb setenv \
   MONGO_URI="mongodb+srv://your_username:your_password@your-cluster.mongodb.net/fitpulse" \
   JWT_SECRET="your-jwt-secret-from-step-2.2" \
   FRONTEND_URL="https://your-frontend.vercel.app" \
+  TRUST_PROXY=true \
+  AUTH_COOKIE_SAME_SITE=none \
+  AUTH_COOKIE_MAX_AGE_MS=604800000 \
   COACH_REGISTRATION_KEY="your-secret-coach-key" \
   RATE_LIMIT_MAX=100 \
   RATE_LIMIT_WINDOW_MS=60000 \
@@ -248,11 +256,14 @@ echo "Your API URL: $EB_URL"
 # Get your EB URL
 EB_URL=$(eb open --print-url)
 
-# Test the health endpoint
+# Test readiness endpoint
 curl "$EB_URL/health"
 
-# Should return:
-# {"status":"OK","timestamp":"2026-04-29T..."}
+# Should return 200 and include checks.database: "UP"
+
+# Test liveness endpoint
+curl "$EB_URL/health/live"
+# Should return 200 and include status: "UP"
 ```
 
 **If this fails:**
@@ -284,6 +295,11 @@ curl -X POST "$EB_URL/api/auth/register" \
 
 # Should return 201 with token:
 # {"message":"Account created!","token":"eyJ...","user":{...}}
+
+# Capture auth cookie and test logout
+curl -i -X POST "$EB_URL/api/auth/logout" \
+  -H "Content-Type: application/json"
+# Should return 200 with {"message":"Logout successful"}
 ```
 
 ### Step 6.3: Test Protected Route
@@ -499,6 +515,9 @@ eb ssh
 
 # Set environment variable
 eb setenv KEY=VALUE
+
+# Example for production hardening flags
+eb setenv TRUST_PROXY=true AUTH_COOKIE_SAME_SITE=none
 
 # Get environment URL
 eb open --print-url
