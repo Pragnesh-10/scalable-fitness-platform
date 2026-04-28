@@ -36,18 +36,26 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   login: async (email, password) => {
     set({ isLoading: true });
-    const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('fitpulse_token', data.token);
-    localStorage.setItem('fitpulse_user', JSON.stringify(data.user));
-    set({ user: data.user, token: data.token, isLoading: false });
+    try {
+      const { data } = await api.post('/auth/login', { email, password });
+      localStorage.setItem('fitpulse_token', data.token);
+      localStorage.setItem('fitpulse_user', JSON.stringify(data.user));
+      set({ user: data.user, token: data.token });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   register: async (formData) => {
     set({ isLoading: true });
-    const { data } = await api.post('/auth/register', formData);
-    localStorage.setItem('fitpulse_token', data.token);
-    localStorage.setItem('fitpulse_user', JSON.stringify(data.user));
-    set({ user: data.user, token: data.token, isLoading: false });
+    try {
+      const { data } = await api.post('/auth/register', formData);
+      localStorage.setItem('fitpulse_token', data.token);
+      localStorage.setItem('fitpulse_user', JSON.stringify(data.user));
+      set({ user: data.user, token: data.token });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   logout: () => {

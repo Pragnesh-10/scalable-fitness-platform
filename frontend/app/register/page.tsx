@@ -17,7 +17,16 @@ export default function RegisterPage() {
       await register(form);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed');
+      if (!err.response) {
+        setError('Network error: Cannot connect to the server.');
+        return;
+      }
+      const data = err.response.data;
+      if (data?.errors && data.errors.length > 0) {
+        setError(data.errors[0].msg);
+      } else {
+        setError(data?.error || 'Registration failed');
+      }
     }
   };
 
