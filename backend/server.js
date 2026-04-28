@@ -12,6 +12,7 @@ const workoutRoutes = require('./routes/workouts');
 const analyticsRoutes = require('./routes/analytics');
 const planRoutes = require('./routes/plans');
 const communityRoutes = require('./routes/community');
+const coachRoutes = require('./routes/coach');
 const { startWearableSync } = require('./services/wearableSync');
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/api/metrics', analyticsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/plans', planRoutes);
 app.use('/api/community', communityRoutes);
+app.use('/api/coach', coachRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));

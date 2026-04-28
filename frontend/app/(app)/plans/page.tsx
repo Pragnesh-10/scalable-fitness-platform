@@ -1,161 +1,113 @@
 'use client';
-import { useEffect, useState } from 'react';
-import api from '../../lib/api';
 
-const GOAL_ICONS: Record<string, string> = {
-  fat_loss: '🔥', muscle_gain: '💪', endurance: '🏅', general_fitness: '🏃', weight_maintenance: '⚖️'
-};
-const LEVEL_COLORS: Record<string, string> = { beginner: '#51CF66', intermediate: '#FFB347', advanced: '#FF6B6B' };
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
 
-export default function PlansPage() {
+export default function Plans() {
   const [activePlan, setActivePlan] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [toast, setToast] = useState('');
-  const [form, setForm] = useState({ plan_type: 'general_fitness', difficulty: 'beginner', duration_weeks: '4' });
-  const [selectedWeek, setSelectedWeek] = useState('week_1');
 
   useEffect(() => {
-    api.get('/plans/active').then(r => setActivePlan(r.data.plan)).catch(() => {});
+    fetchActivePlan();
   }, []);
 
-  const generatePlan = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setGenerating(true);
+  const fetchActivePlan = async () => {
     try {
-      const { data } = await api.post('/plans/generate', { ...form, duration_weeks: parseInt(form.duration_weeks) });
+      const { data } = await api.get('/plans/active');
       setActivePlan(data.plan);
-      setShowForm(false);
-      setToast(`✨ Plan generated!`);
-      setTimeout(() => setToast(''), 3000);
-    } catch { setToast('Generation failed'); setTimeout(() => setToast(''), 3000); }
-    finally { setGenerating(false); }
+    } catch (err) {
+      console.error('Failed to fetch plan');
+    }
+    setLoading(false);
   };
 
-  const weekSchedule = activePlan?.schedule?.[selectedWeek] || [];
-  const weeks = activePlan ? Array.from({ length: activePlan.durationWeeks }, (_, i) => `week_${i + 1}`) : [];
+  const handleGeneratePlan = async () => {
+    setGenerating(true);
+    try {
+      const { data } = await api.post('/plans/generate', { duration_weeks: 4 });
+      setActivePlan(data.plan);
+    } catch (err) {
+      console.error('Failed to generate plan');
+    }
+    setGenerating(false);
+  };
+
+  if (loading) return <div className="p-12 text-center text-gray-500">Loading Plan...</div>;
 
   return (
-    <div>
-      {toast && (
-        <div className="toast-container">
-          <div className={`toast ${toast.includes('failed') ? 'error' : 'success'}`}>
-            {toast.includes('failed') ? '❌' : '✅'} {toast}
-          </div>
-        </div>
-      )}
-
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <div className="p-6 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="page-title">📋 Training Plans</h1>
-          <p className="page-subtitle">Personalized plans based on your goals</p>
+          <h2 className="text-3xl font-bold text-gray-900">Your Training Plan</h2>
+          <p className="text-gray-500 mt-2">Personalized recommendations based on your fitness goals.</p>
         </div>
-        <button id="generate-plan-btn" className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-          {showForm ? '✕ Cancel' : '⚡ Generate Plan'}
+        <button 
+          onClick={handleGeneratePlan} 
+          disabled={generating}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg transition"
+        >
+          {generating ? 'Generating AI Plan...' : activePlan ? 'Regenerate Plan' : 'Generate My First Plan'}
         </button>
       </div>
 
-      {showForm && (
-        <div className="card" style={{ marginBottom: '2rem', borderColor: 'rgba(108,99,255,0.3)', animation: 'slideUp 0.3s ease' }}>
-          <h3 style={{ fontWeight: 700, marginBottom: '1.25rem' }}>🎯 Generate Your Plan</h3>
-          <form onSubmit={generatePlan}>
-            <div className="grid-3" style={{ gap: '1rem', marginBottom: '1rem' }}>
-              <div className="form-group">
-                <label className="form-label">Fitness Goal</label>
-                <select className="form-select" value={form.plan_type} onChange={e => setForm(f => ({ ...f, plan_type: e.target.value }))}>
-                  <option value="fat_loss">🔥 Fat Loss</option>
-                  <option value="muscle_gain">💪 Muscle Gain</option>
-                  <option value="endurance">🏅 Endurance</option>
-                  <option value="general_fitness">🏃 General Fitness</option>
-                  <option value="weight_maintenance">⚖️ Weight Maintenance</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Experience Level</label>
-                <select className="form-select" value={form.difficulty} onChange={e => setForm(f => ({ ...f, difficulty: e.target.value }))}>
-                  <option value="beginner">🟢 Beginner</option>
-                  <option value="intermediate">🟡 Intermediate</option>
-                  <option value="advanced">🔴 Advanced</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Duration</label>
-                <select className="form-select" value={form.duration_weeks} onChange={e => setForm(f => ({ ...f, duration_weeks: e.target.value }))}>
-                  <option value="4">4 Weeks</option>
-                  <option value="8">8 Weeks</option>
-                  <option value="12">12 Weeks</option>
-                </select>
-              </div>
-            </div>
-            <button type="submit" className="btn btn-primary" disabled={generating}>
-              {generating ? '⏳ Generating...' : `Generate ${form.duration_weeks}-Week Plan →`}
-            </button>
-          </form>
+      {!activePlan ? (
+        <div className="bg-white p-12 text-center rounded-xl shadow-sm border border-gray-200">
+           <span className="text-4xl">🤖</span>
+           <h3 className="text-xl font-bold mt-4 text-gray-800">No Active Plan</h3>
+           <p className="text-gray-500 mt-2 mb-6 max-w-md mx-auto">Our recommendation engine uses your profile data (Age, Weight, Goals) to construct a 4-week tailored program.</p>
+           <button onClick={handleGeneratePlan} className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold py-2 px-6 rounded-lg transition">Generate Plan Now</button>
         </div>
-      )}
-
-      {activePlan ? (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-            <h2 style={{ fontWeight: 800, fontSize: '1.2rem' }}>
-              {GOAL_ICONS[activePlan.planType]} {activePlan.planType?.replace(/_/g, ' ')} Plan
-            </h2>
-            <span className="badge badge-success">✅ Active</span>
-            <span className="badge" style={{ background: `${LEVEL_COLORS[activePlan.difficulty]}20`, color: LEVEL_COLORS[activePlan.difficulty], border: `1px solid ${LEVEL_COLORS[activePlan.difficulty]}40` }}>
-              {activePlan.difficulty}
-            </span>
-            <span className="badge badge-warning">📅 {activePlan.durationWeeks} Weeks</span>
+      ) : (
+        <div className="space-y-6">
+          {/* Top Info Card */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 justify-between items-center">
+             <div>
+               <p className="text-sm text-gray-500 font-bold uppercase tracking-wide">Goal Focus</p>
+               <p className="text-2xl font-bold text-gray-900 capitalize">{activePlan.planType.replace('_', ' ')}</p>
+             </div>
+             <div>
+               <p className="text-sm text-gray-500 font-bold uppercase tracking-wide">Difficulty</p>
+               <p className="text-2xl font-bold text-indigo-600 capitalize">{activePlan.difficulty}</p>
+             </div>
+             <div>
+               <p className="text-sm text-gray-500 font-bold uppercase tracking-wide">Duration</p>
+               <p className="text-2xl font-bold text-gray-900">{activePlan.durationWeeks} Weeks</p>
+             </div>
+             <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg font-semibold border border-green-200">
+               Status: ACTIVE
+             </div>
           </div>
 
-          {weeks.length > 1 && (
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', overflowX: 'auto' }}>
-              {weeks.map(w => (
-                <button key={w} className={`btn btn-sm ${selectedWeek === w ? 'btn-primary' : 'btn-ghost'}`}
-                  onClick={() => setSelectedWeek(w)}>
-                  Week {w.split('_')[1]}
-                </button>
+          {/* AI Recommendations */}
+          <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
+            <h3 className="text-lg font-bold text-indigo-900 mb-3">Coach's Dietary & Recovery Rules</h3>
+            <ul className="list-disc list-inside text-indigo-800 space-y-1 ml-2">
+              {activePlan.recommendations?.map((rec: string, i: number) => (
+                <li key={i}>{rec}</li>
               ))}
-            </div>
-          )}
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            {weekSchedule.map((day: any, i: number) => (
-              <div key={i} className="card" style={{
-                padding: '1rem 0.75rem', textAlign: 'center',
-                background: day.type === 'Rest' ? 'rgba(15,16,32,0.5)' : 'rgba(108,99,255,0.1)',
-                borderColor: day.type === 'Rest' ? 'var(--border-light)' : 'rgba(108,99,255,0.3)',
-              }}>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                  {day.day?.slice(0, 3)}
-                </div>
-                <div style={{ fontSize: '1.4rem', marginBottom: '0.4rem' }}>
-                  {day.type === 'Rest' ? '😴' : day.type?.includes('Run') ? '🏃' : day.type?.includes('HIIT') ? '⚡' : day.type?.includes('Yoga') ? '🧘' : '💪'}
-                </div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 600, lineHeight: 1.3 }}>{day.type}</div>
-                {day.duration > 0 && <div style={{ fontSize: '0.62rem', color: 'var(--primary-light)', marginTop: '0.3rem' }}>{day.duration}min</div>}
-              </div>
-            ))}
+            </ul>
           </div>
 
-          {activePlan.recommendations?.length > 0 && (
-            <div className="card" style={{ background: 'rgba(78,205,196,0.06)', borderColor: 'rgba(78,205,196,0.2)' }}>
-              <h3 style={{ fontWeight: 700, marginBottom: '0.875rem', fontSize: '0.95rem' }}>💡 Coach Recommendations</h3>
-              {activePlan.recommendations.map((r: string, i: number) => (
-                <div key={i} style={{ display: 'flex', gap: '0.75rem', padding: '0.5rem 0', borderTop: i > 0 ? '1px solid var(--border-light)' : 'none', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                  <span style={{ color: 'var(--accent-2)' }}>→</span> {r}
+          {/* Weekly Schedule */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             {Object.keys(activePlan.schedule || {}).map((weekKey) => (
+                <div key={weekKey} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 capitalize">{weekKey.replace('_', ' ')}</h4>
+                  <div className="space-y-3">
+                    {activePlan.schedule[weekKey].map((day: any, i: number) => (
+                      <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <span className="font-semibold text-gray-700 w-24 inline-block">{day.day}</span>
+                          <span className={`text-sm ${day.type === 'Rest' ? 'text-gray-400' : 'text-blue-600 font-medium'}`}>{day.type}</span>
+                        </div>
+                        {day.duration > 0 && <span className="text-sm bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold">{day.duration} min</span>}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : !showForm && (
-        <div className="empty-state" style={{ marginTop: '2rem' }}>
-          <div className="empty-state-icon">📋</div>
-          <h3>No active plan</h3>
-          <p>Generate a personalized plan based on your goals</p>
-          <button className="btn btn-primary" style={{ marginTop: '1.25rem' }} onClick={() => setShowForm(true)}>
-            ⚡ Generate My Plan
-          </button>
+             ))}
+          </div>
         </div>
       )}
     </div>
