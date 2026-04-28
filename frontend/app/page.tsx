@@ -2,7 +2,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { BarChart3, Users, Target } from 'lucide-react'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
-import { BarChart3, Users, Target } from 'lucide-react'
 
 export default function Home() {
     return (
