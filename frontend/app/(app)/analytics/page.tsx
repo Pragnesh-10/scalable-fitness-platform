@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import api from '../../lib/api';
+import api from '@/lib/api';
 import {
   AreaChart, Area, LineChart, Line, BarChart, Bar, RadarChart, Radar, PolarGrid,
   PolarAngleAxis, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell
@@ -167,7 +167,7 @@ export default function AnalyticsPage() {
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(val: any, name: string) => [val, name]} />
+                  <Tooltip formatter={(val: any, name: any) => [val, name]} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
