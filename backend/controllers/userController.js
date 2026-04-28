@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Profile = require('../models/Profile');
 const Workout = require('../models/Workout');
 const Metrics = require('../models/Metrics');
+const mongoose = require('mongoose');
 
 const getProfile = async (req, res) => {
   try {
@@ -33,14 +34,17 @@ const getStats = async (req, res) => {
   try {
     const userId = req.user.id;
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const userObjectId = mongoose.Types.ObjectId.isValid(userId)
+      ? new mongoose.Types.ObjectId(userId)
+      : userId;
 
     const [workoutStats, metricStats, recentWorkouts] = await Promise.all([
       Workout.aggregate([
-        { $match: { userId: userId.toString() ? require('mongoose').Types.ObjectId.createFromHexString(userId) : userId, date: { $gte: thirtyDaysAgo } } },
+        { $match: { userId: userObjectId, date: { $gte: thirtyDaysAgo } } },
         { $group: { _id: null, total: { $sum: 1 }, totalCalories: { $sum: '$caloriesBurned' }, totalMinutes: { $sum: '$duration' } } },
       ]),
       Metrics.aggregate([
-        { $match: { userId: require('mongoose').Types.ObjectId.createFromHexString(userId), date: { $gte: thirtyDaysAgo } } },
+        { $match: { userId: userObjectId, date: { $gte: thirtyDaysAgo } } },
         { $group: { _id: null, avgHR: { $avg: '$heartRate' }, totalSteps: { $sum: '$steps' }, avgSleep: { $avg: '$sleepHours' } } },
       ]),
       Workout.countDocuments({ userId, date: { $gte: thirtyDaysAgo } }),

@@ -35,9 +35,28 @@ const assignPlan = async (req, res) => {
     if (req.user.role !== 'coach') return res.status(403).json({ error: 'Unauthorized' });
     const { clientId, planType, difficulty, weeks } = req.body;
 
+    if (!clientId) return res.status(400).json({ error: 'clientId is required' });
+
+    const validPlanTypes = ['fat_loss', 'muscle_gain', 'endurance', 'general_fitness'];
+    const validDifficulties = ['beginner', 'intermediate', 'advanced'];
+    const durationWeeks = Number.parseInt(weeks, 10);
+
+    if (!validPlanTypes.includes(planType)) {
+      return res.status(400).json({ error: 'Invalid plan type' });
+    }
+    if (!validDifficulties.includes(difficulty)) {
+      return res.status(400).json({ error: 'Invalid difficulty level' });
+    }
+    if (!Number.isInteger(durationWeeks) || durationWeeks < 1 || durationWeeks > 12) {
+      return res.status(400).json({ error: 'Weeks must be between 1 and 12' });
+    }
+
+    const client = await User.findOne({ _id: clientId, role: 'user' });
+    if (!client) return res.status(404).json({ error: 'Client not found' });
+
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const schedule = {};
-    for(let w=1; w<=weeks; w++) {
+    for (let w = 1; w <= durationWeeks; w++) {
       schedule[`week_${w}`] = days.map(day => ({ 
         day, type: 'Coach Assigned', duration: 45, intensity: difficulty 
       }));
@@ -49,7 +68,7 @@ const assignPlan = async (req, res) => {
       coachId: req.user.id,
       planType,
       difficulty,
-      durationWeeks: weeks,
+      durationWeeks,
       schedule,
       recommendations: ['Follow coach plan precisely', 'Check in weekly'],
     });

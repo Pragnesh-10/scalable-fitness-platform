@@ -90,7 +90,9 @@ const getLeaderboard = async (req, res) => {
     if (challenge_id) {
       const challenge = await Challenge.findById(challenge_id)
         .populate('participants.userId', 'name avatar_url');
-      const sorted = [...challenge.participants].sort((a, b) => b.progress - a.progress);
+      if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+
+      const sorted = [...challenge.participants].sort((a, b) => (b.progress || 0) - (a.progress || 0));
       return res.json({ leaderboard: sorted });
     }
     // Global leaderboard by workout count
