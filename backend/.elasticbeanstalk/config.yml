@@ -1,36 +1,18 @@
-services:
-  - type: web
-    name: fitpulse-backend
-    env: node
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 5001
-      - key: MONGO_URI
-        sync: false
-      - key: JWT_SECRET
-        sync: false
-      - key: FRONTEND_URL
-        sync: false
-      - key: PROD_FRONTEND_URL
-        sync: false
-      - key: VERCEL_URL
-        sync: false
-      - key: RATE_LIMIT_MAX
-        value: 100
-      - key: RATE_LIMIT_WINDOW_MS
-        value: 60000
-      - key: AUTH_RATE_LIMIT_MAX
-        value: 10
-      - key: AUTH_RATE_LIMIT_WINDOW_MS
-        value: 900000
-      - key: AUTHENTICATED_RATE_LIMIT_MAX
-        value: 300
-      - key: COACH_REGISTRATION_KEY
-        sync: false
-      - key: CORS_ALLOWED_ORIGINS
-        sync: false
+branch-defaults:
+  default:
+    environment: fitpulse-prod
+    group_suffix: null
+global:
+  application_name: fitpulse-api
+  branch: null
+  default_ec2_keyname: null
+  default_platform: Node.js 20 running on 64bit Amazon Linux 2023
+  default_region: us-east-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: null
+  repository: null
+  sc: null
+  workspace_type: Application
