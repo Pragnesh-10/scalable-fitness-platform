@@ -20,7 +20,19 @@ const generateToken = (user) =>
 // POST /auth/register
 const register = async (req, res) => {
   try {
-    const { name, email, password, role = 'user' } = req.body;
+    const { name, email, password } = req.body;
+    const requestedRole = String(req.body.role || 'user').toLowerCase();
+
+    let role = 'user';
+    if (requestedRole === 'coach') {
+      const registrationKey = req.body.registrationKey || req.body.inviteCode;
+      if (!process.env.COACH_REGISTRATION_KEY || registrationKey !== process.env.COACH_REGISTRATION_KEY) {
+        return res.status(403).json({ error: 'Coach registration requires a valid invite key' });
+      }
+
+      role = 'coach';
+    }
+
     if (await User.findOne({ email })) return res.status(409).json({ error: 'Email already registered' });
 
     const user = await User.create({ name, email, password, role });

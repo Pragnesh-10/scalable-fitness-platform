@@ -5,8 +5,9 @@ const {
   getChallenges, createChallenge, joinChallenge, getLeaderboard
 } = require('../controllers/communityController');
 const { authenticate } = require('../middleware/auth');
+const { authenticatedRateLimiter } = require('../middleware/security');
 
-router.use(authenticate);
+router.use(authenticate, authenticatedRateLimiter);
 
 // Groups
 router.get('/groups', getGroups);

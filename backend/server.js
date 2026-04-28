@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const connectDB = require('./config/database');
+const { corsOptions, globalIpRateLimiter, allowedOrigins } = require('./middleware/security');
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
@@ -24,29 +25,15 @@ connectDB();
 app.use(helmet()); // Security headers
 app.use(compression()); // Response compression
 
-// CORS Configuration - Tightened & Robust
-const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:3000',
-  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-  process.env.PROD_FRONTEND_URL,
-].filter(Boolean);
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS policy: ${origin} is not allowed`));
-    }
-  },
-  credentials: true, // Allow cookies & auth headers
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  maxAge: 86400, // 24 hours - preflight cache
-};
-
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return cors(corsOptions)(req, res, next);
+  }
+
+  return next();
+});
+app.use(globalIpRateLimiter);
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
