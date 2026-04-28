@@ -26,6 +26,7 @@ export default function Home() {
                     badge="FitPulse Platform"
                     title1="Elevate Your"
                     title2="Fitness Journey" 
+                    description="Join elite athletes and coaches using data-driven insights to achieve peak performance. Track your workouts, analyze your data, and reach your goals."
                 />
             </div>
             

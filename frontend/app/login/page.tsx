@@ -1,60 +1,89 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
 import Link from 'next/link';
+import { useAuthStore } from '../../lib/store';
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginPage() {
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const { login, isLoading } = useAuthStore();
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
-      const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      await login(form.email, form.password);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.response?.data?.error || 'Invalid credentials');
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login to FitPulse</h2>
-        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+    <div className="auth-container">
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+
+      <div className="auth-card" style={{ animation: 'slideUp 0.5s ease', maxWidth: 400 }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: 16,
+            background: 'linear-gradient(135deg, #6C63FF, #4ECDC4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 0.75rem', fontSize: '1.5rem',
+            boxShadow: '0 8px 30px rgba(108,99,255,0.5)'
+          }}>⚡</div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>
+            Welcome Back
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+            Log in to continue to <span className="gradient-text">FitPulse</span>
+          </p>
+        </div>
+
+        {error && (
+          <div style={{
+            background: 'rgba(255,107,107,0.12)', border: '1px solid rgba(255,107,107,0.3)',
+            borderRadius: 10, padding: '0.75rem 1rem', marginBottom: '1rem',
+            color: '#FF6B6B', fontSize: '0.85rem'
+          }}>{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="form-group">
+            <label className="form-label">Email address</label>
             <input 
+              className="form-input" 
               type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-              required
+              placeholder="you@example.com"
+              value={form.email} 
+              onChange={e => setForm({ ...form, email: e.target.value })} 
+              required 
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+
+          <div className="form-group">
+            <label className="form-label">Password</label>
             <input 
+              className="form-input" 
               type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-              required
+              placeholder="Enter your password"
+              value={form.password} 
+              onChange={e => setForm({ ...form, password: e.target.value })} 
+              required 
             />
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            Sign In
+
+          <button type="submit" className="btn btn-primary btn-lg"
+            style={{ marginTop: '0.5rem', width: '100%' }} disabled={isLoading}>
+            {isLoading ? '⏳ Logging in...' : 'Sign In'}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account? <Link href="/register" className="text-blue-600 hover:text-blue-500">Register</Link>
+
+        <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          Don't have an account? <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
         </p>
       </div>
     </div>
