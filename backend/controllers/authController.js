@@ -48,6 +48,8 @@ const clearAuthCookieOptions = () => {
 
 // POST /auth/register
 const register = async (req, res) => {
+  let createdUserId = null;
+
   try {
     const { name, email, password } = req.body;
     const requestedRole = String(req.body.role || 'user').toLowerCase();
@@ -65,14 +67,33 @@ const register = async (req, res) => {
     if (await User.findOne({ email })) return res.status(409).json({ error: 'Email already registered' });
 
     const user = await User.create({ name, email, password, role });
+    createdUserId = user._id;
     await Profile.create({ userId: user._id });
 
     const token = generateToken(user);
     res.cookie('fitpulse_token', token, getAuthCookieOptions());
     res.status(201).json({ message: 'Account created!', token, user: user.toSafeObject() });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Registration failed' });
+    // Rollback user if profile creation failed after account insert.
+    if (createdUserId) {
+      await User.findByIdAndDelete(createdUserId).catch(() => null);
+    }
+
+    if (err && err.code === 11000 && err.keyPattern?.email) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    if (err && err.name === 'ValidationError') {
+      const firstError = Object.values(err.errors || {})[0];
+      return res.status(400).json({ error: firstError?.message || 'Invalid registration payload' });
+    }
+
+    console.error('Registration error', {
+      requestId: req.requestId,
+      message: err?.message,
+    });
+
+    res.status(500).json({ error: 'Registration failed. Please try again in a moment.' });
   }
 };
 

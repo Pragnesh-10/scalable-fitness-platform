@@ -10,10 +10,19 @@ const normalizeApiBaseUrl = (value?: string): string | null => {
   return trimmed.replace(/\/+$/, '');
 };
 
+const upgradeToHttpsWhenNeeded = (url: string): string => {
+  if (typeof window === 'undefined') return url;
+  if (window.location.protocol !== 'https:') return url;
+  if (!url.startsWith('http://')) return url;
+
+  // Avoid mixed-content failures when frontend is served over HTTPS.
+  return url.replace(/^http:\/\//, 'https://');
+};
+
 // Validate and normalize API base URL
 export const getApiBaseUrl = (): string => {
   const configuredBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
-  if (configuredBaseUrl) return configuredBaseUrl;
+  if (configuredBaseUrl) return upgradeToHttpsWhenNeeded(configuredBaseUrl);
 
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
