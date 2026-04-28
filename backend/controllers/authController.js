@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const http = require('http');
 const { body } = require('express-validator');
 const User = require('../models/User');
 const Profile = require('../models/Profile');
@@ -46,6 +47,34 @@ const clearAuthCookieOptions = () => {
   };
 };
 
+const debugLog = (payload) => {
+  try {
+    const endpoint = 'http://127.0.0.1:7496/ingest/dcb48f73-c783-41f0-88dd-afd6dcce3d77';
+    const body = JSON.stringify(payload);
+
+    if (typeof fetch === 'function') {
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'cbc9f3' },
+        body,
+      }).catch(() => {});
+      return;
+    }
+
+    const req = http.request(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body),
+        'X-Debug-Session-Id': 'cbc9f3',
+      },
+    });
+    req.on('error', () => {});
+    req.write(body);
+    req.end();
+  } catch (_) {}
+};
+
 // POST /auth/register
 const register = async (req, res) => {
   let createdUserId = null;
@@ -53,27 +82,44 @@ const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const requestedRole = String(req.body.role || 'user').toLowerCase();
+    // #region agent log
+    debugLog({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H1',location:'backend/controllers/authController.js:56',message:'register request received',data:{requestedRole,hasName:Boolean(name),hasEmail:Boolean(email),hasPassword:Boolean(password),origin:req.headers.origin||null},timestamp:Date.now()});
+    // #endregion
 
     let role = 'user';
     if (requestedRole === 'coach') {
       const registrationKey = req.body.registrationKey || req.body.inviteCode;
       if (!process.env.COACH_REGISTRATION_KEY || registrationKey !== process.env.COACH_REGISTRATION_KEY) {
+        // #region agent log
+        debugLog({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H2',location:'backend/controllers/authController.js:63',message:'coach registration blocked',data:{hasExpectedCoachKey:Boolean(process.env.COACH_REGISTRATION_KEY),hasProvidedKey:Boolean(registrationKey)},timestamp:Date.now()});
+        // #endregion
         return res.status(403).json({ error: 'Coach registration requires a valid invite key' });
       }
 
       role = 'coach';
     }
 
-    if (await User.findOne({ email })) return res.status(409).json({ error: 'Email already registered' });
+    if (await User.findOne({ email })) {
+      // #region agent log
+      debugLog({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H3',location:'backend/controllers/authController.js:73',message:'duplicate email rejected',data:{role},timestamp:Date.now()});
+      // #endregion
+      return res.status(409).json({ error: 'Email already registered' });
+    }
 
     const user = await User.create({ name, email, password, role });
     createdUserId = user._id;
+    // #region agent log
+    debugLog({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H4',location:'backend/controllers/authController.js:81',message:'user created, creating profile next',data:{role,hasUserId:Boolean(createdUserId)},timestamp:Date.now()});
+    // #endregion
     await Profile.create({ userId: user._id });
 
     const token = generateToken(user);
     res.cookie('fitpulse_token', token, getAuthCookieOptions());
     res.status(201).json({ message: 'Account created!', token, user: user.toSafeObject() });
   } catch (err) {
+    // #region agent log
+    debugLog({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H5',location:'backend/controllers/authController.js:89',message:'register handler error',data:{errorName:err?.name||null,errorCode:err?.code||null,errorMessage:err?.message||null,hadCreatedUser:Boolean(createdUserId)},timestamp:Date.now()});
+    // #endregion
     // Rollback user if profile creation failed after account insert.
     if (createdUserId) {
       await User.findByIdAndDelete(createdUserId).catch(() => null);

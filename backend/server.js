@@ -104,10 +104,18 @@ app.use('/api/coach', coachRoutes);
 
 // ============ ERROR HANDLING ============
 // 404 handler
-app.use((req, res) => res.status(404).json({ error: 'Route not found', path: req.path }));
+app.use((req, res) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7496/ingest/dcb48f73-c783-41f0-88dd-afd6dcce3d77',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cbc9f3'},body:JSON.stringify({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H8',location:'backend/server.js:108',message:'request reached 404 handler',data:{path:req.path,method:req.method,origin:req.headers.origin||null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  res.status(404).json({ error: 'Route not found', path: req.path });
+});
 
 // Global error handler
 app.use((err, req, res, next) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7496/ingest/dcb48f73-c783-41f0-88dd-afd6dcce3d77',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cbc9f3'},body:JSON.stringify({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H9',location:'backend/server.js:112',message:'global error handler invoked',data:{path:req.path,method:req.method,errorMessage:err?.message||null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   console.error('Unhandled error', {
     requestId: req.requestId,
     path: req.path,
@@ -132,6 +140,9 @@ app.listen(PORT, () => {
   console.log(`✅ CORS Allowed Origins: ${allowedOrigins.join(', ')}`);
   console.log(`✅ Environment: ${envConfig.nodeEnv}`);
   console.log(`✅ Trust Proxy: ${envConfig.trustProxy}`);
+  // #region agent log
+  fetch('http://127.0.0.1:7496/ingest/dcb48f73-c783-41f0-88dd-afd6dcce3d77',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cbc9f3'},body:JSON.stringify({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H10',location:'backend/server.js:143',message:'backend startup reached listen callback',data:{port:PORT,nodeEnv:envConfig.nodeEnv},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   startWearableSync();
 });
 

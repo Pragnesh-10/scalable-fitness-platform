@@ -17,6 +17,9 @@ export default function RegisterPage() {
       await register(form);
       router.push('/dashboard');
     } catch (err: any) {
+      // #region agent log
+      fetch('http://127.0.0.1:7496/ingest/dcb48f73-c783-41f0-88dd-afd6dcce3d77',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cbc9f3'},body:JSON.stringify({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H5',location:'frontend/app/register/page.tsx:21',message:'register page caught error',data:{hasResponse:Boolean(err?.response),status:err?.response?.status||null,errorCode:err?.code||null,serverError:err?.response?.data?.error||null,validationMessage:err?.response?.data?.errors?.[0]?.msg||null},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       if (!err.response) {
         setError('Network error: Cannot connect to the server.');
         return;

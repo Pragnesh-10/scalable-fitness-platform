@@ -10,6 +10,20 @@ const normalizeApiBaseUrl = (value?: string): string | null => {
   return trimmed.replace(/\/+$/, '');
 };
 
+const PRODUCTION_API_FALLBACKS: Record<string, string> = {
+  'scalable-fitness-platform.vercel.app': 'https://fitpulse-prod.eba-gbwbegcm.us-east-1.elasticbeanstalk.com/api',
+};
+
+const isPrivateIpv4Host = (hostname: string): boolean => {
+  const parts = hostname.split('.');
+  if (parts.length !== 4 || parts.some((part) => !/^\d+$/.test(part))) return false;
+  const [a, b] = parts.map((part) => Number.parseInt(part, 10));
+  if (a === 10) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  return false;
+};
+
 const upgradeToHttpsWhenNeeded = (url: string): string => {
   if (typeof window === 'undefined') return url;
   if (window.location.protocol !== 'https:') return url;
@@ -26,9 +40,17 @@ export const getApiBaseUrl = (): string => {
 
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
-    // In production, default to same-origin API if env var is missing.
-    if (!isLocalHost) return `${window.location.origin}/api`;
+    const isLocalHost =
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.endsWith('.local') ||
+      isPrivateIpv4Host(hostname);
+    if (!isLocalHost) {
+      const fallbackForHost = PRODUCTION_API_FALLBACKS[hostname];
+      if (fallbackForHost) return fallbackForHost;
+      // For non-local hostnames without explicit mapping, use same-origin API.
+      return `${window.location.origin}/api`;
+    }
   }
 
   // Local development fallback.
