@@ -17,6 +17,35 @@ const generateToken = (user) =>
   jwt.sign({ id: user._id, email: user.email, name: user.name, role: user.role },
     process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 
+const getAuthCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const sameSite = process.env.AUTH_COOKIE_SAME_SITE || (isProduction ? 'none' : 'lax');
+  const maxAgeMs = Number.parseInt(process.env.AUTH_COOKIE_MAX_AGE_MS || '', 10) || 7 * 24 * 60 * 60 * 1000;
+
+  const options = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite,
+    path: '/',
+    maxAge: maxAgeMs,
+  };
+
+  if (process.env.AUTH_COOKIE_DOMAIN) {
+    options.domain = process.env.AUTH_COOKIE_DOMAIN;
+  }
+
+  return options;
+};
+
+const clearAuthCookieOptions = () => {
+  const options = getAuthCookieOptions();
+  return {
+    ...options,
+    maxAge: 0,
+    expires: new Date(0),
+  };
+};
+
 // POST /auth/register
 const register = async (req, res) => {
   try {
@@ -39,6 +68,7 @@ const register = async (req, res) => {
     await Profile.create({ userId: user._id });
 
     const token = generateToken(user);
+    res.cookie('fitpulse_token', token, getAuthCookieOptions());
     res.status(201).json({ message: 'Account created!', token, user: user.toSafeObject() });
   } catch (err) {
     console.error(err);
@@ -55,10 +85,17 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
 
     const token = generateToken(user);
+    res.cookie('fitpulse_token', token, getAuthCookieOptions());
     res.json({ message: 'Login successful', token, user: user.toSafeObject() });
   } catch (err) {
     res.status(500).json({ error: 'Login failed' });
   }
+};
+
+// POST /auth/logout
+const logout = async (req, res) => {
+  res.clearCookie('fitpulse_token', clearAuthCookieOptions());
+  return res.status(200).json({ message: 'Logout successful' });
 };
 
 // GET /auth/me
@@ -72,4 +109,4 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, registerValidation, loginValidation };
+module.exports = { register, login, logout, getMe, registerValidation, loginValidation };

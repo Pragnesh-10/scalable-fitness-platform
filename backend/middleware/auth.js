@@ -1,14 +1,30 @@
 const jwt = require('jsonwebtoken');
 
+const getCookieValue = (cookieHeader, key) => {
+  if (!cookieHeader || typeof cookieHeader !== 'string') return null;
+
+  const parts = cookieHeader.split(';');
+  for (const part of parts) {
+    const [rawKey, ...rawValue] = part.trim().split('=');
+    if (rawKey === key) {
+      return decodeURIComponent(rawValue.join('='));
+    }
+  }
+
+  return null;
+};
+
 const authenticate = (req, res, next) => {
   if (!process.env.JWT_SECRET) {
     return res.status(500).json({ error: 'Authentication is not configured' });
   }
 
   const authHeader = req.headers.authorization || '';
-  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+  const bearerToken = authHeader.replace(/^Bearer\s+/i, '').trim();
+  const cookieToken = getCookieValue(req.headers.cookie, 'fitpulse_token');
+  const token = bearerToken && bearerToken !== authHeader.trim() ? bearerToken : cookieToken;
 
-  if (!token || token === authHeader.trim()) {
+  if (!token) {
     return res.status(401).json({ error: 'No token provided' });
   }
 
