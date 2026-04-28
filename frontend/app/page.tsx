@@ -1,34 +1,12 @@
-import { HeroGeometric } from "@/components/ui/shape-landing-hero"
+import ShaderShowcase from "@/components/ui/hero"
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function Home() {
     return (
         <div className="min-h-screen bg-[#030303] text-white overflow-hidden">
-            {/* Navigation / Header */}
-            <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center">
-                <div className="text-xl font-bold tracking-tighter text-white">
-                    FitPulse
-                </div>
-                <div className="space-x-4">
-                    <Link href="/login" className="text-white hover:text-indigo-300 font-medium px-4 py-2 transition">
-                        Login
-                    </Link>
-                    <Link href="/register" className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded-full transition shadow-[0_0_20px_rgba(99,102,241,0.4)]">
-                        Sign Up
-                    </Link>
-                </div>
-            </nav>
-
-            {/* Hero Section */}
-            <div className="relative w-full">
-                <HeroGeometric 
-                    badge="FitPulse Platform"
-                    title1="Elevate Your"
-                    title2="Fitness Journey" 
-                    description="Join elite athletes and coaches using data-driven insights to achieve peak performance. Track your workouts, analyze your data, and reach your goals."
-                />
-            </div>
+            {/* Hero Section with Nav */}
+            <ShaderShowcase />
             
             {/* Features & Images Section */}
             <section className="relative z-10 container mx-auto px-6 py-24 -mt-32">
