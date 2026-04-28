@@ -79,14 +79,14 @@ export default function ShaderShowcase() {
         className="absolute inset-0 w-full h-full"
         colors={["#000000", "#1C1E35", "#6C63FF", "#4ECDC4", "#FF6B6B"]}
         speed={0.3}
-        backgroundColor="#000000"
+        style={{ backgroundColor: "#000000" }}
       />
       <MeshGradient
         className="absolute inset-0 w-full h-full opacity-60"
         colors={["#000000", "#ffffff", "#6C63FF", "#FF6B6B"]}
         speed={0.2}
         wireframe={true}
-        backgroundColor="transparent"
+        style={{ backgroundColor: "transparent" }}
       />
 
       <header className="relative z-20 flex items-center justify-between p-6">
