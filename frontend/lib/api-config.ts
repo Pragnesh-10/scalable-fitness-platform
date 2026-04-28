@@ -7,10 +7,10 @@
 export const getApiBaseUrl = (): string => {
   // In browser environment, use environment variable
   if (typeof window !== 'undefined') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
   }
   // Server-side (SSR): use environment variable
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 };
 
 // Construct full API endpoint URLs
