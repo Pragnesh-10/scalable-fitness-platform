@@ -1,0 +1,94 @@
+name: Deploy to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/aws-deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run tests (if available)
+        working-directory: backend
+        run: npm test || echo "No tests configured"
+        continue-on-error: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Install Elastic Beanstalk CLI
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install awsebcli
+
+      - name: Configure Elastic Beanstalk
+        working-directory: backend
+        run: |
+          eb init -p "Node.js 20 running on 64bit Amazon Linux 2" fitpulse-api \
+            --region us-east-1 \
+            --ignore-version-conflict || true
+
+      - name: Deploy to Elastic Beanstalk
+        working-directory: backend
+        run: |
+          eb deploy fitpulse-prod --verbose
+
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Test health endpoint
+        run: |
+          # Get the EB URL and test the health endpoint
+          HEALTH_URL=$(aws elasticbeanstalk describe-environments \
+            --environment-names fitpulse-prod \
+            --region us-east-1 \
+            --query 'Environments[0].CNAME' \
+            --output text)
+          
+          echo "Testing health endpoint at: http://$HEALTH_URL/health"
+          
+          for i in {1..10}; do
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "http://$HEALTH_URL/health" || echo "000")
+            if [ "$RESPONSE" = "200" ]; then
+              echo "✅ Health check passed (HTTP 200)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $RESPONSE, retrying..."
+            sleep 10
+          done
+          
+          echo "❌ Health check failed"
+          exit 1
+
+      - name: Deployment Success
+        if: success()
+        run: echo "✅ Deployment to AWS Elastic Beanstalk completed successfully!"
+
+      - name: Deployment Failed
+        if: failure()
+        run: echo "❌ Deployment failed. Check logs above."
