@@ -80,9 +80,6 @@ const createRateLimiter = ({ windowMs, limit, message, keyGenerator }) =>
     skip: (req) => req.method === 'OPTIONS',
     keyGenerator,
     handler: (req, res, _next, options) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7496/ingest/dcb48f73-c783-41f0-88dd-afd6dcce3d77',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cbc9f3'},body:JSON.stringify({sessionId:'cbc9f3',runId:'register-debug',hypothesisId:'H7',location:'backend/middleware/security.js:83',message:'rate limiter blocked request',data:{path:req.path,method:req.method,ip:req.ip,windowMs:options.windowMs},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       res.status(429).json({
         error: message,
         retryAfterSeconds: Math.ceil(options.windowMs / 1000),
