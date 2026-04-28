@@ -353,7 +353,7 @@ vim .env.local
 NEXT_PUBLIC_API_URL=http://localhost:5001/api
 
 # NEW (use your actual EB URL):
-NEXT_PUBLIC_API_URL=http://fitpulse-prod.us-east-1.elasticbeanstalk.com/api
+NEXT_PUBLIC_API_URL=http://fitpulse-prod.eba-gbwbegcm.us-east-1.elasticbeanstalk.com/api
 ```
 
 ### Step 7.2: Restart Frontend Dev Server
