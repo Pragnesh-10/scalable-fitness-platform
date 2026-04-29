@@ -116,7 +116,7 @@ Password: TestPass123!
 ### Frontend
 - **Framework:** Next.js 16.2.4
 - **UI Library:** React 19.2
-- **Language:** TypeScript
+  
 - **Styling:** Tailwind CSS v4
 - **State:** Zustand
 - **Charts:** Recharts
