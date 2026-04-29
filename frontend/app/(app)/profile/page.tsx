@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { 
+  Sparkles,
+  Activity,
   User, 
   Shield, 
   Watch, 
