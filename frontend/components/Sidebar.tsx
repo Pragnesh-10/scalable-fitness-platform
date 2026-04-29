@@ -1,9 +1,10 @@
 'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/store';
 import { useEffect } from 'react';
-import { LayoutDashboard, Target, Activity, Users, UserCircle, LogOut, Flame, ClipboardEdit, Trophy } from 'lucide-react';
+import { LayoutDashboard, Target, Activity, Users, UserCircle, LogOut, Flame, ClipboardEdit, Trophy, Zap, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Sidebar() {
@@ -15,83 +16,88 @@ export default function Sidebar() {
   }, [loadFromStorage]);
 
   const NAV_ITEMS = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/workouts', icon: Flame, label: 'Workouts' },
-    { href: '/analytics', icon: Activity, label: 'Analytics' },
-    { href: '/plans', icon: ClipboardEdit, label: 'My Plans' },
-    { href: '/community', icon: Users, label: 'Community' },
-    { href: '/profile', icon: UserCircle, label: 'Profile' },
+    { href: '/dashboard', icon: LayoutDashboard, label: 'DASHBOARD' },
+    { href: '/workouts', icon: Flame, label: 'WORKOUTS' },
+    { href: '/analytics', icon: Activity, label: 'ANALYTICS' },
+    { href: '/plans', icon: ClipboardEdit, label: 'TACTICAL PLANS' },
+    { href: '/community', icon: Users, label: 'COMMUNITY' },
+    { href: '/profile', icon: UserCircle, label: 'PROFILE' },
   ];
 
   return (
-    <aside className="w-64 bg-[#0a0a0a]/80 backdrop-blur-xl border-r border-white/10 h-screen fixed left-0 top-0 overflow-y-auto flex flex-col shadow-2xl z-50">
-      <div className="flex items-center justify-center py-8 mb-4">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="bg-indigo-500/20 p-2 rounded-xl group-hover:bg-indigo-500/30 transition">
-            <Trophy className="w-6 h-6 text-indigo-400" />
-          </div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70 tracking-tight">FitPulse</h1>
-        </Link>
+    <aside className="hidden md:flex w-64 bg-[#030303] border-r border-white/5 h-screen fixed left-0 top-0 overflow-y-auto flex-col z-[100] p-6">
+      <div className="flex items-center gap-3 mb-12 px-2">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center">
+          <Zap className="w-5 h-5 text-white" fill="currentColor" />
+        </div>
+        <span className="text-xl font-black italic tracking-tighter text-white font-space uppercase">FITPULSE</span>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex-1 space-y-1">
+        <p className="text-[10px] font-space font-bold text-white/30 uppercase tracking-[0.2em] mb-4 px-2">MAIN OPS</p>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname.startsWith(item.href);
+          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
           return (
             <Link 
               key={item.href} 
               href={item.href} 
               className={cn(
-                "flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
+                "flex items-center px-4 py-3 rounded-2xl font-space font-bold text-[11px] tracking-widest transition-all duration-300 group",
                 isActive 
-                  ? "bg-indigo-500/10 text-indigo-400" 
-                  : "text-white/50 hover:bg-white/5 hover:text-white/90"
+                  ? "bg-[#6C63FF]/10 text-[#6C63FF] border border-[#6C63FF]/20" 
+                  : "text-white/40 hover:text-white hover:bg-white/5"
               )}
             >
-              <Icon className={cn("mr-3 w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-indigo-400" : "text-white/40 group-hover:text-white/70")} />
+              <Icon className={cn("mr-3 w-4 h-4 transition-transform group-hover:scale-110", isActive ? "text-[#6C63FF]" : "text-white/20 group-hover:text-white/60")} />
               {item.label}
             </Link>
           );
         })}
 
         {user?.role === 'coach' && (
-          <div className="pt-6 pb-2">
-            <p className="px-4 text-xs font-bold text-white/30 uppercase tracking-widest mb-3">Coach Tools</p>
+          <div className="pt-8">
+            <p className="text-[10px] font-space font-bold text-white/30 uppercase tracking-[0.2em] mb-4 px-2">COMMAND</p>
             <Link 
               href="/coach" 
               className={cn(
-                "flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
-                pathname.startsWith('/coach') ? "bg-amber-500/10 text-amber-400" : "text-white/50 hover:bg-white/5 hover:text-white/90"
+                "flex items-center px-4 py-3 rounded-2xl font-space font-bold text-[11px] tracking-widest transition-all duration-300 group",
+                pathname.startsWith('/coach') ? "bg-secondary/10 text-secondary border border-secondary/20" : "text-white/40 hover:text-white hover:bg-white/5"
               )}
             >
-              <Target className={cn("mr-3 w-5 h-5 transition-transform group-hover:scale-110", pathname.startsWith('/coach') ? "text-amber-400" : "text-white/40 group-hover:text-white/70")} />
-              Client Roster
+              <Target className={cn("mr-3 w-4 h-4 transition-transform group-hover:scale-110", pathname.startsWith('/coach') ? "text-secondary" : "text-white/20 group-hover:text-white/60")} />
+              ROSTER
             </Link>
           </div>
         )}
       </nav>
 
-      {user && (
-        <div className="mt-auto p-4 bg-gradient-to-t from-black/40 to-transparent">
-          <div className="flex items-center px-3 py-3 mb-3 bg-white/5 rounded-2xl border border-white/5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-rose-500 flex items-center justify-center text-white font-bold text-lg mr-3 shadow-md">
-              {user.name?.charAt(0).toUpperCase() || 'U'}
+      <div className="mt-auto pt-8">
+        <div className="glass-card rounded-2xl p-4 mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full border-2 border-[#6C63FF]/30 p-0.5">
+              <div className="w-full h-full rounded-full bg-white/10 flex items-center justify-center font-space font-black text-[#6C63FF]">
+                {user?.name?.charAt(0).toUpperCase() || 'A'}
+              </div>
             </div>
-            <div className="overflow-hidden flex-1">
-              <p className="text-sm font-bold text-white/90 truncate">{user.name}</p>
-              <p className="text-xs text-white/40 capitalize">{user.role}</p>
+            <div className="overflow-hidden">
+              <p className="text-[11px] font-space font-black text-white truncate uppercase tracking-tighter">{user?.name || 'ATHLETE'}</p>
+              <p className="text-[9px] font-space font-bold text-secondary uppercase tracking-widest">LEVEL 42</p>
             </div>
           </div>
-          <button 
-            onClick={logout} 
-            className="w-full flex items-center justify-center px-4 py-2.5 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-xl text-sm font-semibold transition-all group"
-          >
-            <LogOut className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Sign Out
-          </button>
+          <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full w-2/3 bg-gradient-to-r from-[#6C63FF] to-[#4ECDC4]" />
+          </div>
         </div>
-      )}
+        
+        <button 
+          onClick={logout} 
+          className="w-full flex items-center justify-center gap-2 font-space font-bold text-[10px] text-white/40 hover:text-[#6C63FF] transition-colors uppercase tracking-[0.2em]"
+        >
+          <LogOut className="w-3 h-3" />
+          TERMINATE SESSION
+        </button>
+      </div>
     </aside>
   );
 }

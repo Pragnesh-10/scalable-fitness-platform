@@ -1,16 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Lexend:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+
 :root {
-  /* Color Palette */
+  /* Premium Design System Tokens */
+  --font-space: 'Space Grotesk', sans-serif;
+  --font-lexend: 'Lexend', sans-serif;
+  
   --primary: #6C63FF;
   --primary-dark: #5a52e0;
   --primary-light: #8b85ff;
+  --secondary: #4ECDC4;
+  --tertiary: #FF3366;
   --accent: #FF6B6B;
   --accent-2: #4ECDC4;
   --accent-3: #FFE66D;
   --success: #51CF66;
   --warning: #FFB347;
   --danger: #FF6B6B;
+  --surface-deep: #030303;
 
   /* Backgrounds */
   --bg-900: #0A0B14;
