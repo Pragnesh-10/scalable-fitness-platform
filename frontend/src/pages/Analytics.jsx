@@ -129,7 +129,7 @@ export default function Analytics() {
             
             <div className="flex justify-between items-center mb-16 relative z-10">
               <div className="space-y-1">
-                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic">BIO-SCAN FEED</h2>
+                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic px-1">BIO-SCAN FEED</h2>
                 <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">REAL-TIME TELEMETRY STREAMING</p>
               </div>
               <div className="flex gap-4">

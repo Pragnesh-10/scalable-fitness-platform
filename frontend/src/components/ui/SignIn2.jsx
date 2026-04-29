@@ -70,7 +70,7 @@ const SignIn2 = ({ onSubmit, isLoading = false, error: externalError = "" }) => 
           </motion.div>
           
           <div className="text-center mb-10">
-            <h2 className="text-4xl font-space font-black uppercase tracking-tighter mb-2">
+            <h2 className="text-4xl font-space font-black uppercase tracking-tighter mb-2 px-1">
               MISSION <span className="text-secondary italic">ACCESS</span>
             </h2>
             <p className="text-white/40 font-lexend text-[10px] uppercase font-bold tracking-[0.4em]">

@@ -69,7 +69,7 @@ export default function LandingPage() {
               <span className="text-[10px] font-space font-black uppercase tracking-[0.3em] text-white/60">SQUADRON STATUS: ACTIVE</span>
             </div>
             
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-space font-black tracking-tighter uppercase mb-6 leading-tight break-words whitespace-normal">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter uppercase mb-6 leading-tight break-words whitespace-normal px-1">
               BEYOND<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/40 to-[#6C63FF]">LIMITS</span>
             </h1>
@@ -134,7 +134,7 @@ export default function LandingPage() {
             <div className="space-y-8 sm:space-y-12">
               <div className="space-y-4">
                 <h2 className="text-[10px] font-space font-black text-[#6C63FF] uppercase tracking-[0.5em]">CORE CAPABILITIES</h2>
-                <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-black uppercase tracking-tighter leading-tight break-words whitespace-normal">
+                <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-black uppercase tracking-tighter leading-tight break-words whitespace-normal px-1">
                   TACTICAL<br />INTELLIGENCE
                 </h3>
               </div>

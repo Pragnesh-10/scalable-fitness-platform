@@ -165,7 +165,7 @@ export default function Profile() {
             </motion.div>
           </div>
           <div className="space-y-2">
-            <h2 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">{user.name}</h2>
+            <h2 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none px-1">{user.name}</h2>
             <div className="flex items-center justify-center gap-4">
               <span className="font-space text-[11px] text-secondary tracking-[0.4em] uppercase font-black">ELITE OPERATIVE</span>
               <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />

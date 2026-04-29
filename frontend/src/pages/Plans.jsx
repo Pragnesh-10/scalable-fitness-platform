@@ -116,7 +116,7 @@ export default function Plans() {
         {/* Plans Header */}
         <motion.section variants={itemVariants} className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
           <div className="space-y-4">
-            <h1 className="font-space text-5xl sm:text-7xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8] break-words">
+            <h1 className="font-space text-5xl sm:text-7xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8] break-words px-1">
               TACTICAL <br />
               <span className="text-secondary italic">DIRECTIVES</span>
             </h1>

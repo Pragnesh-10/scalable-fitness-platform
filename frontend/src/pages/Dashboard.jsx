@@ -163,7 +163,7 @@ export default function Dashboard() {
             
             <div className="flex flex-col sm:flex-row justify-between items-start mb-12 sm:mb-16 relative z-10 gap-6">
               <div>
-                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter mb-2">Performance Load</h2>
+                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter mb-2 px-1">Performance Load</h2>
                 <p className="text-[9px] sm:text-[10px] font-space font-black text-white/40 uppercase tracking-[0.4em]">Operational intensity across the current cycle</p>
               </div>
               <div className="flex gap-4">

@@ -133,7 +133,7 @@ export default function Workouts() {
         {/* Workout Tracker Header */}
         <motion.section variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
           <div className="space-y-4">
-            <h1 className="font-space text-5xl sm:text-7xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9] break-words">
+            <h1 className="font-space text-5xl sm:text-7xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9] break-words px-1">
               WORKOUT <br />
               <span className="text-[#6C63FF] italic">TRACKER</span>
             </h1>
@@ -173,7 +173,7 @@ export default function Workouts() {
                     <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
                     <span className="text-[10px] font-space font-black text-secondary uppercase tracking-[0.4em]">NEURAL FORM AI</span>
                   </div>
-                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight">ELBOW STABILITY</h3>
+                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight px-1">ELBOW STABILITY</h3>
                 </div>
                 <div className="bg-secondary/20 p-4 rounded-3xl border border-secondary/30">
                   <CheckCircle2 className="w-8 h-8 text-secondary" />

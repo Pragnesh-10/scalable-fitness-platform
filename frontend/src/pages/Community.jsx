@@ -111,7 +111,7 @@ export default function Community() {
       >
         {/* Community Header */}
         <motion.section variants={itemVariants} className="space-y-4 w-full">
-          <h1 className="font-space text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter leading-tight break-words whitespace-normal">
+          <h1 className="font-space text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter leading-tight break-words whitespace-normal px-1">
             ELITE <br />
             <span className="text-secondary italic">COHORT</span>
           </h1>

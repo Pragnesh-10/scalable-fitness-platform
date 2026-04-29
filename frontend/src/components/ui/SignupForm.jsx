@@ -140,7 +140,7 @@ export default function SignupForm({ onSubmit, isLoading, error: externalError }
             >
               <Zap className="w-8 h-8 text-white" fill="currentColor" />
             </motion.div>
-            <CardTitle className="text-3xl font-space font-black uppercase tracking-tighter text-white">
+            <CardTitle className="text-3xl font-space font-black uppercase tracking-tighter text-white px-1">
               MISSION <span className="text-secondary italic">ENROLLMENT</span>
             </CardTitle>
             <p className="text-white/40 font-lexend text-[10px] uppercase font-bold tracking-[0.4em] mt-3">
