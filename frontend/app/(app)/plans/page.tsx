@@ -297,7 +297,7 @@ export default function Plans() {
                               day.type === 'Rest' ? 'text-white/10' : 'text-white'
                             )}>
                               {day.type}
-                            </h4>
+                            </span>
                             {day.type !== 'Rest' && (
                               <div className="flex items-center gap-2 text-[#6C63FF]">
                                 <span className="text-[9px] font-space font-black uppercase tracking-widest">INITIALIZE</span>
