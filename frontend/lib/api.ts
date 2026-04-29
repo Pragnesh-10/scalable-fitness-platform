@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getApiBaseUrl } from './api-config';
 
-const DEFAULT_API_TIMEOUT_MS = 12000;
+const DEFAULT_API_TIMEOUT_MS = 30000; // Increased to 30s to handle cold starts/slow DB
 const parsedTimeout = Number.parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT_MS || '', 10);
 const apiTimeoutMs = Number.isFinite(parsedTimeout) && parsedTimeout > 0
   ? parsedTimeout
