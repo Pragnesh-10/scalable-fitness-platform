@@ -51,7 +51,7 @@ const register = async (req, res) => {
   let createdUserId = null;
 
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, fitnessGoals } = req.body;
     const requestedRole = String(req.body.role || 'user').toLowerCase();
 
     let role = 'user';
@@ -70,7 +70,12 @@ const register = async (req, res) => {
 
     const user = await User.create({ name, email, password, role });
     createdUserId = user._id;
-    await Profile.create({ userId: user._id });
+    
+    // Create profile with fitness goals if provided
+    await Profile.create({ 
+      userId: user._id,
+      fitnessGoals: fitnessGoals || 'general_fitness'
+    });
 
     const token = generateToken(user);
     res.cookie('fitpulse_token', token, getAuthCookieOptions());
@@ -78,7 +83,9 @@ const register = async (req, res) => {
   } catch (err) {
     // Rollback user if profile creation failed after account insert.
     if (createdUserId) {
-      await User.findByIdAndDelete(createdUserId).catch(() => null);
+      await User.findByIdAndDelete(createdUserId).catch((rollbackErr) => {
+        console.error('Failed to rollback user after profile creation error', rollbackErr.message);
+      });
     }
 
     if (err && err.code === 11000 && err.keyPattern?.email) {
@@ -93,6 +100,7 @@ const register = async (req, res) => {
     console.error('Registration error', {
       requestId: req.requestId,
       message: err?.message,
+      stack: process.env.NODE_ENV !== 'production' ? err?.stack : undefined
     });
 
     res.status(500).json({ error: 'Registration failed. Please try again in a moment.' });

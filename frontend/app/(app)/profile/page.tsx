@@ -3,9 +3,32 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 
+type UserProfile = {
+  _id?: string;
+  name?: string;
+  role?: string;
+};
+
+type DeviceConnection = {
+  deviceType: string;
+  accessToken?: string;
+  connectedAt?: Date;
+  isActive?: boolean;
+  status?: string;
+};
+
+type ProfileData = {
+  age?: number | string;
+  weight?: number | string;
+  height?: number | string;
+  fitnessGoals?: string;
+  experienceLevel?: string;
+  deviceConnections?: DeviceConnection[];
+};
+
 export default function Profile() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>({});
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<ProfileData>({});
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -15,10 +38,6 @@ export default function Profile() {
     { id: 'fitbit', name: 'Fitbit', icon: '⌚' },
     { id: 'garmin', name: 'Garmin', icon: '🗺️' }
   ];
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   const fetchProfile = async () => {
     try {
@@ -30,8 +49,14 @@ export default function Profile() {
     }
   };
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProfile();
+  }, []);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setSaving(true);
     setMessage('');
     try {
@@ -52,17 +77,17 @@ export default function Profile() {
 
   const handleDeviceToggle = async (deviceId: string) => {
     const existingConnections = profile.deviceConnections || [];
-    const isConnected = existingConnections.some((d: any) => d.deviceType === deviceId && d.isActive);
+    const isConnected = existingConnections.some((d: DeviceConnection) => d.deviceType === deviceId && d.isActive);
     
     let newConnections;
     if (isConnected) {
-      newConnections = existingConnections.map((d: any) => 
+      newConnections = existingConnections.map((d: DeviceConnection) => 
         d.deviceType === deviceId ? { ...d, isActive: false } : d
       );
     } else {
-      const exists = existingConnections.some((d: any) => d.deviceType === deviceId);
+      const exists = existingConnections.some((d: DeviceConnection) => d.deviceType === deviceId);
       if (exists) {
-        newConnections = existingConnections.map((d: any) => 
+        newConnections = existingConnections.map((d: DeviceConnection) => 
           d.deviceType === deviceId ? { ...d, isActive: true } : d
         );
       } else {
@@ -152,7 +177,7 @@ export default function Profile() {
            
            <div className="space-y-4">
              {WEARABLES.map(wearable => {
-                const isActive = profile.deviceConnections?.some((d: any) => d.deviceType === wearable.id && d.isActive);
+                const isActive = profile.deviceConnections?.some((d: DeviceConnection) => d.deviceType === wearable.id && d.isActive);
                 
                 return (
                   <div key={wearable.id} className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${isActive ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'}`}>

@@ -38,13 +38,7 @@ app.use(compression()); // Response compression
 app.disable('x-powered-by');
 
 app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    return cors(corsOptions)(req, res, next);
-  }
-
-  return next();
-});
+// Remove the redundant OPTIONS handler as the cors middleware handles it
 app.use(globalIpRateLimiter);
 app.use((req, res, next) => {
   req.requestId = req.headers['x-request-id'] || crypto.randomUUID();
@@ -142,9 +136,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 FitPulse API → http://localhost:${PORT}`);
+const PORT = process.env.PORT || 5001;
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 FitPulse API → http://${HOST}:${PORT}`);
   console.log(`✅ CORS Allowed Origins: ${allowedOrigins.join(', ')}`);
   console.log(`✅ Environment: ${envConfig.nodeEnv}`);
   console.log(`✅ Trust Proxy: ${envConfig.trustProxy}`);

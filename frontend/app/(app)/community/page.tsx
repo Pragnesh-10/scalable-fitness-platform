@@ -3,15 +3,23 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 
+type LeaderboardUser = { _id: string; name: string; workoutCount: number; totalCalories: number };
+type Challenge = {
+  _id: string;
+  challengeName: string;
+  description?: string;
+  goalValue?: number;
+  goalType?: string;
+  participant_count?: number;
+  endDate: string;
+  is_joined?: boolean;
+};
+
 export default function Community() {
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'challenges'>('leaderboard');
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [challenges, setChallenges] = useState([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -28,6 +36,11 @@ export default function Community() {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
+  }, [activeTab]);
 
   const handleJoinChallenge = async (challengeId: string) => {
     try {
@@ -67,7 +80,7 @@ export default function Community() {
              <h3 className="text-lg font-semibold text-indigo-900">Top Athletes (Last 30 Days)</h3>
           </div>
           <ul className="divide-y divide-gray-100">
-            {leaderboard.map((user: any, index: number) => (
+            {leaderboard.map((user, index: number) => (
               <li key={user._id} className="p-4 flex items-center hover:bg-gray-50 transition-colors">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 ${index === 0 ? 'bg-yellow-100 text-yellow-600' : index === 1 ? 'bg-gray-200 text-gray-600' : index === 2 ? 'bg-orange-100 text-orange-600' : 'text-gray-400'}`}>
                   #{index + 1}
@@ -86,7 +99,7 @@ export default function Community() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {challenges.map((challenge: any) => (
+          {challenges.map((challenge) => (
             <div key={challenge._id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
               <div className="flex justify-between items-start mb-4">
                 <div>

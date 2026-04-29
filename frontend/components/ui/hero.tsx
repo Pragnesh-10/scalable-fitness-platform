@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react"
+import { useMemo, useRef } from "react"
 import { MeshGradient, PulsingBorder } from "@paper-design/shaders-react"
 import { motion } from "framer-motion"
 import { Activity, ArrowRight } from "lucide-react"
@@ -7,25 +7,16 @@ import Link from "next/link"
 
 export default function ShaderShowcase() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isActive, setIsActive] = useState(false)
-
-  useEffect(() => {
-    const handleMouseEnter = () => setIsActive(true)
-    const handleMouseLeave = () => setIsActive(false)
-
-    const container = containerRef.current
-    if (container) {
-      container.addEventListener("mouseenter", handleMouseEnter)
-      container.addEventListener("mouseleave", handleMouseLeave)
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener("mouseenter", handleMouseEnter)
-        container.removeEventListener("mouseleave", handleMouseLeave)
-      }
-    }
-  }, [])
+  const sparkleParticles = useMemo(
+    () =>
+      Array.from({ length: 6 }, (_, i) => ({
+        id: i,
+        left: `${20 + i * 10}%`,
+        top: `${20 + (i % 3) * 20}%`,
+        driftX: (i % 2 === 0 ? 1 : -1) * (6 + i),
+      })),
+    []
+  )
 
   return (
     <div ref={containerRef} className="min-h-screen bg-black relative overflow-hidden">
@@ -100,24 +91,24 @@ export default function ShaderShowcase() {
           />
           <span className="text-xl font-bold tracking-tighter text-white">FitPulse</span>
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            {[...Array(6)].map((_, i) => (
+            {sparkleParticles.map((particle) => (
               <motion.div
-                key={i}
+                key={particle.id}
                 className="absolute w-1 h-1 bg-white/60 rounded-full"
                 style={{
-                  left: `${20 + Math.random() * 60}%`,
-                  top: `${20 + Math.random() * 60}%`,
+                  left: particle.left,
+                  top: particle.top,
                 }}
                 animate={{
                   y: [-10, -20, -10],
-                  x: [0, Math.random() * 20 - 10, 0],
+                  x: [0, particle.driftX, 0],
                   opacity: [0, 1, 0],
                   scale: [0, 1, 0],
                 }}
                 transition={{
                   duration: 2,
                   repeat: Number.POSITIVE_INFINITY,
-                  delay: i * 0.2,
+                  delay: particle.id * 0.2,
                   ease: "easeInOut",
                 }}
               />

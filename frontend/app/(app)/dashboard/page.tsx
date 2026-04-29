@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 interface Analytics {
   summary: { avgHR: number; totalSteps: number };
-  dailyMetrics: any[];
+  dailyMetrics: Array<{ date: string; value?: number }>;
 }
 
 export default function Dashboard() {

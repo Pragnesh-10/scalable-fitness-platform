@@ -1,23 +1,18 @@
 'use client';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/store';
-import { useEffect, useState } from 'react';
-import { LayoutDashboard, Target, Activity, Users, UserCircle, LogOut, Flame, Brain, LayoutGrid, ClipboardEdit, Trophy } from 'lucide-react';
+import { useEffect } from 'react';
+import { LayoutDashboard, Target, Activity, Users, UserCircle, LogOut, Flame, ClipboardEdit, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, loadFromStorage, logout } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     loadFromStorage();
-    setMounted(true);
   }, [loadFromStorage]);
-
-  if (!mounted) return null; // prevent hydration mismatch
 
   const NAV_ITEMS = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },

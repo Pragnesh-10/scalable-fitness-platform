@@ -3,14 +3,19 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 
+type PlanDay = { day: string; type: string; duration: number };
+type ActivePlan = {
+  planType: string;
+  difficulty: string;
+  durationWeeks: number;
+  recommendations?: string[];
+  schedule?: Record<string, PlanDay[]>;
+};
+
 export default function Plans() {
-  const [activePlan, setActivePlan] = useState<any>(null);
+  const [activePlan, setActivePlan] = useState<ActivePlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-
-  useEffect(() => {
-    fetchActivePlan();
-  }, []);
 
   const fetchActivePlan = async () => {
     try {
@@ -21,6 +26,11 @@ export default function Plans() {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchActivePlan();
+  }, []);
 
   const handleGeneratePlan = async () => {
     setGenerating(true);
@@ -34,6 +44,8 @@ export default function Plans() {
   };
 
   if (loading) return <div className="p-12 text-center text-gray-500">Loading Plan...</div>;
+
+  const planSchedule = activePlan?.schedule || {};
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -81,7 +93,7 @@ export default function Plans() {
 
           {/* AI Recommendations */}
           <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
-            <h3 className="text-lg font-bold text-indigo-900 mb-3">Coach's Dietary & Recovery Rules</h3>
+            <h3 className="text-lg font-bold text-indigo-900 mb-3">Coach&apos;s Dietary & Recovery Rules</h3>
             <ul className="list-disc list-inside text-indigo-800 space-y-1 ml-2">
               {activePlan.recommendations?.map((rec: string, i: number) => (
                 <li key={i}>{rec}</li>
@@ -91,11 +103,11 @@ export default function Plans() {
 
           {/* Weekly Schedule */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             {Object.keys(activePlan.schedule || {}).map((weekKey) => (
+             {Object.keys(planSchedule).map((weekKey) => (
                 <div key={weekKey} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                   <h4 className="text-lg font-bold text-gray-900 mb-4 capitalize">{weekKey.replace('_', ' ')}</h4>
                   <div className="space-y-3">
-                    {activePlan.schedule[weekKey].map((day: any, i: number) => (
+                    {planSchedule[weekKey].map((day: PlanDay, i: number) => (
                       <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div>
                           <span className="font-semibold text-gray-700 w-24 inline-block">{day.day}</span>

@@ -16,14 +16,15 @@ export default function LoginPage() {
     try {
       await login(form.email, form.password);
       router.push('/dashboard');
-    } catch (err: any) {
-      if (!err.response) {
+    } catch (err: unknown) {
+      const maybeErr = err as { response?: { data?: { errors?: Array<{ msg?: string }>; error?: string } } };
+      if (!maybeErr.response) {
         setError('Network error: Cannot connect to the server.');
         return;
       }
-      const data = err.response.data;
+      const data = maybeErr.response?.data;
       if (data?.errors && data.errors.length > 0) {
-        setError(data.errors[0].msg);
+        setError(data.errors[0]?.msg || 'Invalid credentials');
       } else {
         setError(data?.error || 'Invalid credentials');
       }
@@ -92,7 +93,7 @@ export default function LoginPage() {
         </form>
 
         <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          Don't have an account? <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
+          Don&apos;t have an account? <Link href="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
         </p>
       </div>
     </div>

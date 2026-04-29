@@ -16,18 +16,23 @@ export default function RegisterPage() {
     try {
       await register(form);
       router.push('/dashboard');
-    } catch (err: any) {
-      if (err?.code === 'ECONNABORTED' || String(err?.message || '').toLowerCase().includes('timeout')) {
+    } catch (err: unknown) {
+      const maybeErr = err as {
+        code?: string;
+        message?: string;
+        response?: { data?: { errors?: Array<{ msg?: string }>; error?: string } };
+      };
+      if (maybeErr?.code === 'ECONNABORTED' || String(maybeErr?.message || '').toLowerCase().includes('timeout')) {
         setError('Request timed out. Server is taking too long to respond. Please try again.');
         return;
       }
-      if (!err.response) {
+      if (!maybeErr.response) {
         setError('Network error: Cannot connect to the server.');
         return;
       }
-      const data = err.response.data;
+      const data = maybeErr.response.data;
       if (data?.errors && data.errors.length > 0) {
-        setError(data.errors[0].msg);
+        setError(data.errors[0]?.msg || 'Registration failed');
       } else {
         setError(data?.error || 'Registration failed');
       }

@@ -1,25 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import { useState } from 'react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { Brain, HeartPulse, Activity } from 'lucide-react';
 
+type ChartPoint = { day: string; heartRate: number; steps: number; calories: number };
+
 export default function Analytics() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
   const [metricType, setMetricType] = useState('heartRate'); // 'heartRate', 'steps', 'calories'
 
-  useEffect(() => {
-    setIsMounted(true);
-    api.get('/analytics/weekly')
-      .then(res => setData(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  const chartData = [
+  const chartData: ChartPoint[] = [
     { day: 'Mon', heartRate: 110, steps: 6000, calories: 1800 },
     { day: 'Tue', heartRate: 125, steps: 8500, calories: 2300 },
     { day: 'Wed', heartRate: 115, steps: 7200, calories: 2100 },
@@ -65,35 +55,31 @@ export default function Analytics() {
             {metricType === 'heartRate' ? 'Cardiovascular Stress' : metricType === 'steps' ? 'Movement Volume' : 'Caloric Expenditure'}
           </h2>
           <div className="h-80 w-full">
-            {isMounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={metricType === 'heartRate' ? '#f43f5e' : metricType === 'steps' ? '#10b981' : '#f59e0b'} stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor={metricType === 'heartRate' ? '#f43f5e' : metricType === 'steps' ? '#10b981' : '#f59e0b'} stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="day" stroke="rgba(255,255,255,0.4)" axisLine={false} tickLine={false} />
-                  <YAxis stroke="rgba(255,255,255,0.4)" axisLine={false} tickLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey={metricType} 
-                    stroke={metricType === 'heartRate' ? '#f43f5e' : metricType === 'steps' ? '#10b981' : '#f59e0b'} 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorMetric)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full w-full rounded-xl bg-white/[0.03] animate-pulse" />
-            )}
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={metricType === 'heartRate' ? '#f43f5e' : metricType === 'steps' ? '#10b981' : '#f59e0b'} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={metricType === 'heartRate' ? '#f43f5e' : metricType === 'steps' ? '#10b981' : '#f59e0b'} stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis dataKey="day" stroke="rgba(255,255,255,0.4)" axisLine={false} tickLine={false} />
+                <YAxis stroke="rgba(255,255,255,0.4)" axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                  itemStyle={{ color: '#fff' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey={metricType} 
+                  stroke={metricType === 'heartRate' ? '#f43f5e' : metricType === 'steps' ? '#10b981' : '#f59e0b'} 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorMetric)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 

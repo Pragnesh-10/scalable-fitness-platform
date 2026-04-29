@@ -43,6 +43,7 @@ const allowedOrigins = unique([
 
 const corsOptions = {
   origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) {
       return callback(null, true);
     }
@@ -53,11 +54,25 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    return callback(new Error(`CORS policy: ${normalizedOrigin || origin} is not allowed`));
+    // In development, be more lenient or log specifically
+    if (!isProduction) {
+      console.warn(`⚠️  CORS blocked origin: ${normalizedOrigin || origin}`);
+    }
+
+    // Instead of throwing an Error (which returns 403), we can pass false
+    // or provide more info. 
+    return callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'Accept', 
+    'Origin',
+    'X-Request-Id'
+  ],
   exposedHeaders: [
     'RateLimit-Limit',
     'RateLimit-Remaining',
@@ -65,7 +80,9 @@ const corsOptions = {
     'X-RateLimit-Limit',
     'X-RateLimit-Remaining',
     'X-RateLimit-Reset',
+    'X-Request-Id'
   ],
+  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
   maxAge: 86400,
 };
 

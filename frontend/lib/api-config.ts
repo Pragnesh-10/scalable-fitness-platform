@@ -29,7 +29,18 @@ const upgradeToHttpsWhenNeeded = (url: string): string => {
   if (window.location.protocol !== 'https:') return url;
   if (!url.startsWith('http://')) return url;
 
-  // Avoid mixed-content failures when frontend is served over HTTPS.
+  // Do NOT upgrade for local development addresses as the backend likely doesn't have SSL
+  const urlObj = new URL(url);
+  const hostname = urlObj.hostname;
+  const isLocal = 
+    hostname === 'localhost' || 
+    hostname === '127.0.0.1' || 
+    hostname.endsWith('.local') ||
+    isPrivateIpv4Host(hostname);
+
+  if (isLocal) return url;
+
+  // Avoid mixed-content failures when frontend is served over HTTPS in production.
   return url.replace(/^http:\/\//, 'https://');
 };
 
@@ -37,9 +48,12 @@ const rewriteLocalhostForCurrentHost = (url: string): string => {
   if (typeof window === 'undefined') return url;
   const currentHost = window.location.hostname;
   if (!currentHost) return url;
+  
+  // Keep localhost/127.0.0.1 if that's what we're already using
   if (currentHost === 'localhost' || currentHost === '127.0.0.1') return url;
 
-  // If frontend is opened via LAN/private host, "localhost" points to the wrong machine.
+  // If frontend is opened via LAN/private host (e.g. 192.168.1.5), 
+  // "localhost" in the API URL would point to the user's phone/browser machine, not the server.
   return url
     .replace('://localhost:', `://${currentHost}:`)
     .replace('://127.0.0.1:', `://${currentHost}:`);

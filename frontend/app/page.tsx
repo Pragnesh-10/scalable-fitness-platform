@@ -26,7 +26,7 @@ export default function Home() {
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6C63FF] to-[#4ECDC4]">Track Smart</span>
                         </h2>
                         <p className="text-white/60 text-lg md:text-xl leading-relaxed max-w-lg font-light">
-                            Join elite athletes and coaches using data-driven insights to achieve peak performance. FitPulse connects you with the right tools, whether you're lifting heavy, running far, or recovering well.
+                            Join elite athletes and coaches using data-driven insights to achieve peak performance. FitPulse connects you with the right tools, whether you&apos;re lifting heavy, running far, or recovering well.
                         </p>
                         <div className="pt-4">
                             <Link href="/register" className="inline-flex items-center justify-center bg-white text-black font-semibold px-8 py-4 rounded-full hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)]">
@@ -47,7 +47,7 @@ export default function Home() {
                         {/* Floating Testimonial Card */}
                         <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[1.5rem] transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
                             <p className="text-white/90 font-medium text-lg md:text-xl italic leading-relaxed">
-                                "The only platform that tracks my lifts and endurance in one place."
+                                &ldquo;The only platform that tracks my lifts and endurance in one place.&rdquo;
                             </p>
                             <div className="mt-6 flex items-center gap-4">
                                 <div className="h-10 w-10 rounded-full overflow-hidden relative border border-white/20">

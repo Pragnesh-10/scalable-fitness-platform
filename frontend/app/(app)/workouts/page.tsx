@@ -5,8 +5,17 @@ import api from '@/lib/api';
 import { Activity, Plus, Search, Timer, Zap, MoreVertical } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 
+type Workout = {
+  _id?: string;
+  title?: string;
+  type: string;
+  date?: string;
+  duration: number;
+  caloriesBurned?: number;
+};
+
 export default function Workouts() {
-  const [workouts, setWorkouts] = useState([]);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [title, setTitle] = useState('');
   const [type, setType] = useState('running');
   const [duration, setDuration] = useState('');
@@ -29,6 +38,7 @@ export default function Workouts() {
 
   useEffect(() => {
     loadFromStorage();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchWorkouts();
   }, [loadFromStorage]);
 
@@ -91,13 +101,13 @@ export default function Workouts() {
            <div className="col-span-full h-[40vh] flex flex-col items-center justify-center border border-dashed border-white/20 rounded-2xl bg-white/[0.02]">
              <Activity className="w-16 h-16 text-white/20 mb-4" />
              <h3 className="text-xl font-bold mb-2">No workouts found</h3>
-             <p className="text-white/50 mb-6 text-center max-w-md">Your log is empty. It's time to lace up those shoes, grab a barbell, or hit the mat.</p>
+             <p className="text-white/50 mb-6 text-center max-w-md">Your log is empty. It&apos;s time to lace up those shoes, grab a barbell, or hit the mat.</p>
              <button onClick={() => setIsModalOpen(true)} className="text-indigo-400 font-semibold flex items-center gap-2 hover:text-indigo-300">
                <Plus className="w-4 h-4" /> Start Tracking
              </button>
            </div>
         ) : (
-          workouts.map((workout: any, idx: number) => (
+          workouts.map((workout, idx: number) => (
              <div key={workout._id || idx} className="bg-[#121212] border border-white/10 rounded-2xl p-6 group hover:border-white/30 transition duration-300 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-4">
@@ -113,7 +123,7 @@ export default function Workouts() {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-1 line-clamp-1">{workout.title || 'Untitled Session'}</h3>
                   <p className="text-sm font-medium text-white/50 uppercase tracking-wider mb-6">
-                    {workout.type} • {new Date(workout.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'})}
+                    {workout.type} • {new Date(workout.date || '1970-01-01').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'})}
                   </p>
                 </div>
                 
@@ -122,10 +132,10 @@ export default function Workouts() {
                     <Timer className="w-4 h-4 text-white/40" />
                     <span className="text-white font-semibold">{workout.duration}<span className="text-white/50 text-xs ml-1">MIN</span></span>
                   </div>
-                  {workout.caloriesBurned > 0 && (
+                  {(workout.caloriesBurned || 0) > 0 && (
                     <div className="flex items-center gap-2">
                       <Zap className="w-4 h-4 text-white/40" />
-                      <span className="text-white font-semibold">{workout.caloriesBurned}<span className="text-white/50 text-xs ml-1">KCAL</span></span>
+                      <span className="text-white font-semibold">{workout.caloriesBurned || 0}<span className="text-white/50 text-xs ml-1">KCAL</span></span>
                     </div>
                   )}
                 </div>
