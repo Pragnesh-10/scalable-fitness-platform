@@ -17,6 +17,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 type PlanDay = { day: string; type: string; duration: number };
 type ActivePlan = {

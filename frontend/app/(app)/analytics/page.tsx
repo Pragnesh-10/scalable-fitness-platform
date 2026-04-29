@@ -16,6 +16,7 @@ import {
   Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 type ChartPoint = { day: string; heartRate: number; steps: number; calories: number };
 
