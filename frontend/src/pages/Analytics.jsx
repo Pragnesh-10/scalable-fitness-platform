@@ -54,7 +54,7 @@ export default function Analytics() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex justify-between items-center w-full px-12 py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-8 md:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF6B6B] to-[#6C63FF] flex items-center justify-center shadow-lg shadow-rose-500/20">
@@ -77,15 +77,15 @@ export default function Analytics() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-32 px-12 max-w-7xl mx-auto space-y-16 relative z-10"
+        className="pt-28 md:pt-32 px-4 sm:px-6 md:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-12 md:space-y-16 relative z-10"
       >
         {/* Page Title */}
-        <motion.section variants={itemVariants} className="space-y-4 text-center lg:text-left">
-          <h1 className="font-space text-6xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8]">
+        <motion.section variants={itemVariants} className="space-y-4 text-center lg:text-left w-full">
+          <h1 className="font-space text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter leading-tight break-words whitespace-normal">
             DEEP <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-white/40 to-secondary bg-[length:200%_auto] animate-gradient italic">TELEMETRY</span>
           </h1>
-          <p className="text-white/40 font-lexend text-sm uppercase tracking-[0.4em] font-bold max-w-xl">
+          <p className="text-white/40 font-lexend text-xs sm:text-sm uppercase tracking-[0.4em] font-bold max-w-2xl mx-auto lg:mx-0">
             Biological data aggregation and performance synthesis for dominant physical outcomes.
           </p>
         </motion.section>
@@ -98,7 +98,7 @@ export default function Analytics() {
               whileHover={{ y: -10, scale: 1.02 }}
               onClick={() => setMetricType(m.id)}
               className={cn(
-                "glass-card p-10 rounded-[48px] text-left transition-all border relative overflow-hidden group",
+                "glass-card p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] text-left transition-all border relative overflow-hidden group",
                 metricType === m.id 
                   ? 'border-white/20 bg-white/[0.04] shadow-2xl' 
                   : 'border-white/5 opacity-40 hover:opacity-100'
@@ -115,7 +115,7 @@ export default function Analytics() {
                 </div>
                 <div className={cn("w-3 h-3 rounded-full shadow-lg", metricType === m.id ? 'animate-pulse' : '')} style={{ backgroundColor: m.color }} />
               </div>
-              <h3 className="text-3xl font-space font-black text-white uppercase mb-2 tracking-tighter">{m.label}</h3>
+              <h3 className="text-2xl sm:text-3xl font-space font-black text-white uppercase mb-2 tracking-tighter">{m.label}</h3>
               <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.3em]">{m.sub}</p>
             </motion.button>
           ))}
@@ -129,8 +129,8 @@ export default function Analytics() {
             
             <div className="flex justify-between items-center mb-16 relative z-10">
               <div className="space-y-1">
-                <h2 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic">BIO-SCAN FEED</h2>
-                <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">REAL-TIME TELEMETRY STREAMING</p>
+                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic">BIO-SCAN FEED</h2>
+                <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">REAL-TIME TELEMETRY STREAMING</p>
               </div>
               <div className="flex gap-4">
                 <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
@@ -143,7 +143,7 @@ export default function Analytics() {
               </div>
             </div>
 
-            <div className="h-[450px] w-full relative z-10">
+            <div className="h-[300px] sm:h-[450px] w-full relative z-10">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -197,7 +197,7 @@ export default function Analytics() {
             {/* AI Intelligence Card */}
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="glass-card p-12 rounded-[64px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent relative overflow-hidden flex flex-col group flex-1 shadow-3xl"
+              className="glass-card p-8 sm:p-12 rounded-[48px] sm:rounded-[64px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent relative overflow-hidden flex flex-col group flex-1 shadow-3xl"
             >
               {/* Scanline Effect */}
               <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[size:100%_4px] pointer-events-none opacity-30" />
@@ -247,8 +247,8 @@ export default function Analytics() {
                 <stat.icon className={cn("w-8 h-8", stat.color)} />
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">{stat.label}</p>
-                <p className="text-4xl font-space font-black text-white uppercase tracking-tighter">{stat.val}</p>
+                <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">{stat.label}</p>
+                <p className="text-2xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter">{stat.val}</p>
               </div>
               <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
                 <ArrowUpRight size={32} className="text-white/10" />

@@ -100,7 +100,7 @@ export default function Workouts() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 right-0 z-[60] flex justify-between items-center py-6 px-16 bg-black/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        className="fixed top-0 right-0 z-[60] flex justify-between items-center py-4 md:py-6 px-4 sm:px-8 md:px-16 bg-black/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{ left: 'var(--sidebar-width, 0px)' }}
       >
         <div className="flex items-center gap-4">
@@ -116,10 +116,11 @@ export default function Workouts() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsModalOpen(true)}
-          className="bg-white text-black px-10 py-3 rounded-none font-space font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-3 group border-2 border-transparent hover:border-white hover:bg-black hover:text-white"
+          className="bg-white text-black px-4 sm:px-10 py-2.5 sm:py-3 rounded-none font-space font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-2 sm:gap-3 group border-2 border-transparent hover:border-white hover:bg-black hover:text-white"
         >
-          <Plus size={18} className="group-hover:rotate-90 transition-transform" />
-          LOG MISSION
+          <Plus size={16} className="group-hover:rotate-90 transition-transform" />
+          <span className="hidden xs:block">LOG MISSION</span>
+          <span className="xs:hidden">LOG</span>
         </motion.button>
       </motion.header>
 
@@ -127,12 +128,12 @@ export default function Workouts() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-32 px-20 max-w-7xl mx-auto space-y-16"
+        className="pt-28 md:pt-32 px-4 sm:px-8 md:px-12 lg:px-20 w-full max-w-7xl mx-auto space-y-12 md:space-y-16"
       >
         {/* Workout Tracker Header */}
         <motion.section variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
           <div className="space-y-4">
-            <h1 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9]">
+            <h1 className="font-space text-5xl sm:text-7xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9] break-words">
               WORKOUT <br />
               <span className="text-[#6C63FF] italic">TRACKER</span>
             </h1>
@@ -160,7 +161,7 @@ export default function Workouts() {
           {/* Form Check AI */}
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className="glass-card p-10 rounded-[56px] relative overflow-hidden group shadow-2xl"
+            className="glass-card p-6 sm:p-10 rounded-[40px] sm:rounded-[56px] relative overflow-hidden group shadow-2xl"
           >
             {/* Background Texture Overlay */}
             <div className="absolute inset-0 bg-[url('/assets/generated/strength_realistic_tactical_1777436798332.png')] bg-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000" />
@@ -172,13 +173,13 @@ export default function Workouts() {
                     <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
                     <span className="text-[10px] font-space font-black text-secondary uppercase tracking-[0.4em]">NEURAL FORM AI</span>
                   </div>
-                  <h3 className="text-4xl font-space font-black text-white uppercase tracking-tight">ELBOW STABILITY</h3>
+                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight">ELBOW STABILITY</h3>
                 </div>
                 <div className="bg-secondary/20 p-4 rounded-3xl border border-secondary/30">
                   <CheckCircle2 className="w-8 h-8 text-secondary" />
                 </div>
               </div>
-              <p className="text-white/60 font-lexend text-lg leading-relaxed mb-10">
+              <p className="text-white/60 font-lexend text-base sm:text-lg leading-relaxed mb-10">
                 "Operational data indicates excessive flare. Tuck elbows closer to the thoracic cage to maximize tricep torque."
               </p>
               <div className="flex items-center gap-4">
@@ -193,14 +194,14 @@ export default function Workouts() {
           {/* Rest Timer */}
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className="glass-card p-10 rounded-[56px] relative overflow-hidden group flex flex-col items-center justify-center text-center shadow-2xl"
+            className="glass-card p-6 sm:p-10 rounded-[40px] sm:rounded-[56px] relative overflow-hidden group flex flex-col items-center justify-center text-center shadow-2xl"
           >
             <div className="absolute top-10 left-10">
               <span className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">RECOVERY PROTOCOL</span>
             </div>
             
-            <div className="relative mb-10 group/timer cursor-pointer">
-              <svg className="w-64 h-64 transform -rotate-90">
+            <div className="relative mb-6 sm:mb-10 group/timer cursor-pointer">
+              <svg className="w-48 h-48 sm:w-64 sm:h-64 transform -rotate-90">
                 <circle className="text-white/5" strokeWidth="4" stroke="currentColor" fill="transparent" r="120" cx="128" cy="128" />
                 <motion.circle 
                   initial={{ strokeDashoffset: 754 }}
@@ -221,7 +222,7 @@ export default function Workouts() {
                   key={timeLeft}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-7xl font-space font-black text-white tracking-tight"
+                  className="text-5xl sm:text-7xl font-space font-black text-white tracking-tight"
                 >
                   {formatTime(timeLeft)}
                 </motion.span>
@@ -241,7 +242,7 @@ export default function Workouts() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setTimerActive(!timerActive)}
-                className="px-12 py-5 bg-[#6C63FF] text-white rounded-3xl font-space font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/30"
+                className="px-8 sm:px-12 py-4 sm:py-5 bg-[#6C63FF] text-white rounded-3xl font-space font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/30"
               >
                 {timerActive ? 'PAUSE PROTOCOL' : 'INITIATE REST'}
               </motion.button>
@@ -253,8 +254,8 @@ export default function Workouts() {
         <motion.section variants={itemVariants}>
           <div className="flex justify-between items-center mb-12 px-2">
             <div className="space-y-2">
-              <h2 className="text-4xl font-space font-black text-white uppercase tracking-tight">Operational History</h2>
-              <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Audit log of past performance cycles</p>
+              <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight">Operational History</h2>
+              <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Audit log of past performance cycles</p>
             </div>
             <div className="flex gap-4">
               <button className="glass-card p-4 rounded-2xl text-white/40 hover:text-white border border-white/5 transition-all">
@@ -262,10 +263,11 @@ export default function Workouts() {
               </button>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-[#6C63FF] text-white px-12 py-6 rounded-none font-space font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/40 hover:bg-[#5a52e0] hover:scale-105 active:scale-95 transition-all flex items-center gap-4 group border-2 border-[#6C63FF]"
+                className="bg-[#6C63FF] text-white px-6 sm:px-12 py-3 sm:py-6 rounded-none font-space font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/40 hover:bg-[#5a52e0] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 sm:gap-4 group border-2 border-[#6C63FF]"
               >
-                <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                LOG NEW MISSION
+                <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+                <span className="hidden xs:block">LOG NEW MISSION</span>
+                <span className="xs:hidden">LOG MISSION</span>
               </button>
               <button className="hidden md:flex glass-card px-8 py-4 rounded-2xl text-white font-space font-black text-[10px] uppercase tracking-[0.2em] border border-white/5 hover:border-white/20 transition-all items-center gap-3">
                 MONTHLY REPORT
@@ -302,17 +304,17 @@ export default function Workouts() {
                   <motion.div 
                     key={workout._id || idx} 
                     whileHover={{ x: 10, backgroundColor: 'rgba(255,255,255,0.02)' }}
-                    className="glass-card p-8 rounded-[40px] flex flex-col lg:flex-row lg:items-center justify-between gap-10 border border-white/5 hover:border-[#6C63FF]/30 transition-all group cursor-pointer relative overflow-hidden"
+                    className="glass-card p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-10 border border-white/5 hover:border-[#6C63FF]/30 transition-all group cursor-pointer relative overflow-hidden"
                   >
                     {/* Background Visualizer */}
                     <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-[#6C63FF]/5 to-transparent pointer-events-none" />
                     
-                    <div className="flex items-center gap-10 relative z-10">
-                      <div className="w-20 h-20 rounded-[28px] bg-white/5 border border-white/10 flex items-center justify-center text-[#6C63FF] group-hover:bg-[#6C63FF] group-hover:text-white transition-all shadow-xl">
-                        {workout.type === 'running' ? <Zap size={32} /> : <Dumbbell size={32} />}
+                    <div className="flex items-center gap-6 sm:gap-10 relative z-10">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] sm:rounded-[28px] bg-white/5 border border-white/10 flex items-center justify-center text-[#6C63FF] group-hover:bg-[#6C63FF] group-hover:text-white transition-all shadow-xl">
+                        {workout.type === 'running' ? <Zap size={28} /> : <Dumbbell size={28} />}
                       </div>
                       <div className="space-y-2">
-                        <h4 className="text-3xl font-space font-black text-white uppercase tracking-tight group-hover:text-[#6C63FF] transition-colors">
+                        <h4 className="text-2xl sm:text-3xl font-space font-black text-white uppercase tracking-tight group-hover:text-[#6C63FF] transition-colors">
                           {workout.title || 'BIO-MISSION'}
                         </h4>
                         <div className="flex items-center gap-4">
@@ -324,14 +326,14 @@ export default function Workouts() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-16 relative z-10 lg:pr-10">
+                    <div className="flex items-center gap-8 sm:gap-16 relative z-10 lg:pr-10">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">DURATION</p>
-                        <p className="text-3xl font-space font-black text-white tracking-tighter italic">{workout.duration} <span className="text-xs text-secondary font-normal not-italic tracking-widest">MINS</span></p>
+                        <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">DURATION</p>
+                        <p className="text-2xl sm:text-3xl font-space font-black text-white tracking-tighter italic">{workout.duration} <span className="text-[10px] sm:text-xs text-secondary font-normal not-italic tracking-widest">MINS</span></p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">OUTPUT</p>
-                        <p className="text-3xl font-space font-black text-white tracking-tighter italic">{workout.caloriesBurned || 0} <span className="text-xs text-[#6C63FF] font-normal not-italic tracking-widest">KCAL</span></p>
+                        <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">OUTPUT</p>
+                        <p className="text-2xl sm:text-3xl font-space font-black text-white tracking-tighter italic">{workout.caloriesBurned || 0} <span className="text-[10px] sm:text-xs text-[#6C63FF] font-normal not-italic tracking-widest">KCAL</span></p>
                       </div>
                       <motion.div 
                         whileHover={{ scale: 1.2, x: 5 }}
@@ -358,14 +360,14 @@ export default function Workouts() {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="glass-strong w-full max-w-xl rounded-none overflow-hidden border border-white/10 shadow-3xl shadow-black/80"
             >
-              <div className="p-12 border-b border-white/5 flex justify-between items-center">
+              <div className="p-8 sm:p-12 border-b border-white/5 flex justify-between items-center">
                 <div className="space-y-1">
-                  <h2 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic">LOG MISSION</h2>
-                  <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Manual performance data upload</p>
+                  <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic">LOG MISSION</h2>
+                  <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Manual performance data upload</p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="w-14 h-14 rounded-full border border-white/10 text-white/40 hover:text-white text-3xl transition-all flex items-center justify-center">&times;</button>
+                <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border border-white/10 text-white/40 hover:text-white text-2xl sm:text-3xl transition-all flex items-center justify-center">&times;</button>
               </div>
-              <form onSubmit={handleAddWorkout} className="p-12 space-y-8">
+              <form onSubmit={handleAddWorkout} className="p-8 sm:p-12 space-y-6 sm:space-y-8">
                 <div className="space-y-3">
                   <label className="text-[10px] font-space font-black text-white/40 uppercase tracking-[0.4em] ml-2">MISSION CODERS</label>
                   <input 

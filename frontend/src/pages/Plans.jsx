@@ -86,7 +86,7 @@ export default function Plans() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex justify-between items-center w-full px-12 py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-8 md:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shadow-lg shadow-secondary/30">
@@ -99,10 +99,11 @@ export default function Plans() {
           whileTap={{ scale: 0.95 }}
           onClick={handleGeneratePlan} 
           disabled={generating}
-          className="bg-[#6C63FF] text-white px-10 py-3 rounded-2xl font-space font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-3 group disabled:opacity-50"
+          className="bg-[#6C63FF] text-white px-6 sm:px-10 py-2.5 sm:py-3 rounded-2xl font-space font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-2 sm:gap-3 group disabled:opacity-50"
         >
-          {generating ? <Zap size={18} className="animate-spin" /> : <Sparkles size={18} className="group-hover:rotate-12 transition-transform" />}
-          {activePlan ? 'RE-OPTIMIZE PLAN' : 'INITIATE NEURAL DRAFT'}
+          {generating ? <Zap size={16} className="animate-spin" /> : <Sparkles size={16} className="group-hover:rotate-12 transition-transform" />}
+          <span className="hidden xs:block">{activePlan ? 'RE-OPTIMIZE PLAN' : 'INITIATE NEURAL DRAFT'}</span>
+          <span className="xs:hidden">{activePlan ? 'OPTIMIZE' : 'INITIATE'}</span>
         </motion.button>
       </motion.header>
 
@@ -110,12 +111,12 @@ export default function Plans() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-32 px-12 max-w-7xl mx-auto space-y-16 relative z-10"
+        className="pt-28 md:pt-32 px-4 sm:px-8 md:px-12 lg:px-20 w-full max-w-7xl mx-auto space-y-12 md:space-y-16 relative z-10"
       >
         {/* Plans Header */}
         <motion.section variants={itemVariants} className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
           <div className="space-y-4">
-            <h1 className="font-space text-6xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8]">
+            <h1 className="font-space text-5xl sm:text-7xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8] break-words">
               TACTICAL <br />
               <span className="text-secondary italic">DIRECTIVES</span>
             </h1>
@@ -129,7 +130,7 @@ export default function Plans() {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="glass-card flex items-center gap-6 px-10 py-6 rounded-[32px] border border-secondary/20 shadow-2xl"
+                className="glass-card flex items-center gap-4 sm:gap-6 px-6 sm:px-10 py-4 sm:py-6 rounded-[24px] sm:rounded-[32px] border border-secondary/20 shadow-2xl"
               >
                 <div className="relative">
                   <div className="w-3 h-3 bg-secondary rounded-full animate-pulse shadow-[0_0_15px_#4ECDC4]" />
@@ -147,7 +148,7 @@ export default function Plans() {
         {!activePlan ? (
           <motion.section 
             variants={itemVariants}
-            className="h-[60vh] glass-strong rounded-[60px] border border-white/5 relative overflow-hidden flex flex-col items-center justify-center text-center p-20 shadow-3xl"
+            className="min-h-[50vh] sm:h-[60vh] glass-strong rounded-[40px] sm:rounded-[60px] border border-white/5 relative overflow-hidden flex flex-col items-center justify-center text-center p-8 sm:p-20 shadow-3xl"
           >
             {/* Background Commander */}
             <div className="absolute inset-0 bg-[url('/assets/generated/ai_commander_tactical_1777436865732.png')] bg-cover opacity-20 grayscale pointer-events-none" />
@@ -161,8 +162,8 @@ export default function Plans() {
                 <BrainCircuit className="w-16 h-16 text-secondary" />
               </motion.div>
               <div className="space-y-4">
-                <h3 className="text-5xl font-space font-black text-white uppercase tracking-tighter">Command System Offline</h3>
-                <p className="text-white/40 font-lexend text-lg leading-relaxed px-10">
+                <h3 className="text-3xl sm:text-5xl font-space font-black text-white uppercase tracking-tighter">Command System Offline</h3>
+                <p className="text-white/40 font-lexend text-base sm:text-lg leading-relaxed px-4 sm:px-10">
                   The neural core requires biometric input to synthesize a custom tactical program. Authorize the draft to begin mission planning.
                 </p>
               </div>
@@ -170,7 +171,7 @@ export default function Plans() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleGeneratePlan} 
-                className="bg-white text-black px-16 py-6 rounded-3xl font-space font-black text-xs uppercase tracking-[0.4em] shadow-3xl hover:bg-secondary hover:text-white transition-all"
+                className="bg-white text-black px-10 sm:px-16 py-4 sm:py-6 rounded-[24px] sm:rounded-3xl font-space font-black text-[10px] sm:text-xs uppercase tracking-[0.4em] shadow-3xl hover:bg-secondary hover:text-white transition-all"
               >
                 INITIATE DRAFT PROTOCOL
               </motion.button>
@@ -188,7 +189,7 @@ export default function Plans() {
                 <motion.div 
                   key={i} 
                   whileHover={{ y: -10 }}
-                  className="glass-card p-10 rounded-[48px] border border-white/5 relative overflow-hidden group shadow-2xl"
+                  className="glass-card p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] border border-white/5 relative overflow-hidden group shadow-2xl"
                 >
                   <div className={cn("absolute -top-10 -right-10 w-40 h-40 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20", stat.color.replace('text-', 'bg-'))} />
                   <div className="flex items-center gap-6 relative z-10">
@@ -205,7 +206,7 @@ export default function Plans() {
             </motion.section>
 
             {/* Tactical Directives */}
-            <motion.section variants={itemVariants} className="glass-strong p-12 rounded-[64px] relative overflow-hidden border border-white/5 shadow-3xl group">
+            <motion.section variants={itemVariants} className="glass-strong p-8 sm:p-12 rounded-[40px] sm:rounded-[64px] relative overflow-hidden border border-white/5 shadow-3xl group">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#6C63FF]/10 via-transparent to-transparent" />
               <div className="relative z-10">
                 <div className="flex items-center gap-5 mb-12">
@@ -219,7 +220,7 @@ export default function Plans() {
                     <motion.div 
                       key={i} 
                       whileHover={{ x: 10 }}
-                      className="flex items-start gap-6 p-8 bg-white/[0.02] rounded-[32px] border border-white/5 hover:border-secondary/30 transition-all group/rec"
+                      className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8 bg-white/[0.02] rounded-[24px] sm:rounded-[32px] border border-white/5 hover:border-secondary/30 transition-all group/rec"
                     >
                       <div className="mt-1 w-6 h-6 rounded-full border-2 border-secondary/20 flex items-center justify-center flex-shrink-0 group-hover/rec:bg-secondary group-hover/rec:border-secondary transition-all">
                         <span className="text-[10px] font-space font-black text-secondary group-hover/rec:text-black">{i+1}</span>
@@ -247,7 +248,7 @@ export default function Plans() {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="glass-card p-12 rounded-[56px] relative overflow-hidden border border-white/5 shadow-2xl group"
+                    className="glass-card p-8 sm:p-12 rounded-[40px] sm:rounded-[56px] relative overflow-hidden border border-white/5 shadow-2xl group"
                   >
                     <div className="absolute top-0 right-0 p-8">
                       <span className="text-8xl font-space font-black text-white/[0.02] leading-none">0{idx + 1}</span>

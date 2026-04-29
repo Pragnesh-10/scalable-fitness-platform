@@ -46,7 +46,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4 sm:px-6 overflow-hidden">
         {/* Realistic Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -58,7 +58,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-transparent to-[#030303]" />
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ export default function LandingPage() {
               <span className="text-[10px] font-space font-black uppercase tracking-[0.3em] text-white/60">SQUADRON STATUS: ACTIVE</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-space font-black tracking-tighter uppercase mb-6 leading-[0.85]">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-space font-black tracking-tighter uppercase mb-6 leading-tight break-words whitespace-normal">
               BEYOND<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/40 to-[#6C63FF]">LIMITS</span>
             </h1>
@@ -79,18 +79,18 @@ export default function LandingPage() {
               Track, optimize, and dominate your mission with real-time biometric analysis.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link to="/register">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+              <Link to="/register" className="w-full sm:w-auto">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-12 py-6 rounded-2xl bg-[#6C63FF] text-white font-space font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/20 flex items-center gap-3 group"
+                  className="w-full sm:px-12 py-5 sm:py-6 rounded-2xl bg-[#6C63FF] text-white font-space font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/20 flex items-center justify-center gap-3 group"
                 >
                   INITIALIZE ACCOUNT
                   <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </motion.button>
               </Link>
-              <button className="px-12 py-6 rounded-2xl bg-white/5 border border-white/10 text-white font-space font-black text-xs uppercase tracking-[0.3em] backdrop-blur-md hover:bg-white/10 transition-all">
+              <button className="w-full sm:w-auto sm:px-12 py-5 sm:py-6 rounded-2xl bg-white/5 border border-white/10 text-white font-space font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] backdrop-blur-md hover:bg-white/10 transition-all">
                 VIEW CAPABILITIES
               </button>
             </div>
@@ -128,13 +128,13 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-40 px-6 relative">
+      <section id="features" className="py-32 sm:py-40 px-4 sm:px-6 relative">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-20 items-center">
+            <div className="space-y-8 sm:space-y-12">
               <div className="space-y-4">
                 <h2 className="text-[10px] font-space font-black text-[#6C63FF] uppercase tracking-[0.5em]">CORE CAPABILITIES</h2>
-                <h3 className="text-5xl md:text-7xl font-space font-black uppercase tracking-tighter leading-none">
+                <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-black uppercase tracking-tighter leading-tight break-words whitespace-normal">
                   TACTICAL<br />INTELLIGENCE
                 </h3>
               </div>
@@ -216,20 +216,20 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-20 px-6 border-t border-white/5 bg-[#050505]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+      <footer className="py-16 sm:py-20 px-4 sm:px-6 border-t border-white/5 bg-[#050505]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-10">
           <div className="flex items-center gap-3">
             <Zap size={24} className="text-[#6C63FF]" />
-            <span className="text-xl font-space font-black tracking-tighter uppercase italic text-white/40">FITPULSE v2.4</span>
+            <span className="text-lg sm:text-xl font-space font-black tracking-tighter uppercase italic text-white/40">FITPULSE v2.4</span>
           </div>
           
-          <div className="flex gap-10 text-[10px] font-space font-black text-white/20 uppercase tracking-widest">
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-widest">
             <a href="#" className="hover:text-white transition-colors">SECURITY PROTOCOL</a>
             <a href="#" className="hover:text-white transition-colors">PRIVACY POLICY</a>
             <a href="#" className="hover:text-white transition-colors">TERMS OF MISSION</a>
           </div>
 
-          <p className="text-[10px] font-space font-bold text-white/10 uppercase tracking-[0.2em]">
+          <p className="text-[9px] sm:text-[10px] font-space font-bold text-white/10 uppercase tracking-[0.2em] text-center md:text-right">
             © 2026 FITPULSE OPERATIONAL COMMAND. ALL RIGHTS RESERVED.
           </p>
         </div>
