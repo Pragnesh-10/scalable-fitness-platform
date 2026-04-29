@@ -78,7 +78,7 @@ Create `backend/.env`:
 ```env
 PORT=5001
 NODE_ENV=development
-MONGO_URI=mongodb+srv://yedrunagapragnesh_db_user:c2ZgusbuQzJpbTaG@scalablefitnessplatform.cxzuciq.mongodb.net/fitpulse
+MONGO_URI=mongodb+srv://<name>_db_user:c2ZgusbuQzJpbTaG@scalablefitnessplatform.cxzuciq.mongodb.net/fitpulse
 JWT_SECRET=your_secret_key_here
 JWT_EXPIRES_IN=7d
 ```
