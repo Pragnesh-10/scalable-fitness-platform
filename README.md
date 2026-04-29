@@ -2,7 +2,7 @@
 
 A modern, full-stack fitness tracking application with real-time analytics, workout management, community features, and wearable device integration.
 
-**[📖 Complete Local Setup Guide →](./LOCAL_SETUP.md)**
+
 
 ---
 
@@ -177,44 +177,10 @@ lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
 - Check `.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:5001/api`
 - Check browser console for errors
 
-**[→ Full Troubleshooting Guide](./LOCAL_SETUP.md#-troubleshooting)**
 
----
-
-## 📖 Additional Documentation
-
-- **[Local Setup Guide](./LOCAL_SETUP.md)** - Complete setup instructions
-- **[AWS Deployment](./AWS_DEPLOYMENT_GUIDE.md)** - Deploy to production
-- **[API Documentation](#)** - Backend API reference
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Clone your fork locally
-3. Follow the setup guide above
-4. Create a feature branch
-5. Make your changes
-6. Submit a pull request
-
----
 
 ## 📝 License
 
 This project is licensed under the ISC License.
 
----
 
-## 💬 Support
-
-For issues or questions:
-- Check [LOCAL_SETUP.md](./LOCAL_SETUP.md)
-- Open an issue on GitHub
-- Contact the development team
-
----
-
-**Happy coding! 🚀**
-
-For detailed setup instructions, please see [LOCAL_SETUP.md](./LOCAL_SETUP.md)
