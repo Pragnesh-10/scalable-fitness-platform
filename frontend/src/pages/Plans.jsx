@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import api from '../lib/api';
 import { 
   Target, 
   Zap, 
@@ -17,19 +15,10 @@ import {
   Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-
-type PlanDay = { day: string; type: string; duration: number };
-type ActivePlan = {
-  planType: string;
-  difficulty: string;
-  durationWeeks: number;
-  recommendations?: string[];
-  schedule?: Record<string, PlanDay[]>;
-};
+import { cn } from '../lib/utils';
 
 export default function Plans() {
-  const [activePlan, setActivePlan] = useState<ActivePlan | null>(null);
+  const [activePlan, setActivePlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
 
@@ -161,7 +150,7 @@ export default function Plans() {
             className="h-[60vh] glass-strong rounded-[60px] border border-white/5 relative overflow-hidden flex flex-col items-center justify-center text-center p-20 shadow-3xl"
           >
             {/* Background Commander */}
-            <div className="absolute inset-0 bg-[url('/Users/ypragnesh/.gemini/antigravity/brain/debf5f57-01ca-4acb-bef9-0c4062a6d7b3/ai_commander_tactical_1777436865732.png')] bg-cover opacity-20 grayscale pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('/assets/generated/ai_commander_tactical_1777436865732.png')] bg-cover opacity-20 grayscale pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-transparent" />
             
             <div className="relative z-10 max-w-2xl space-y-10">
@@ -203,7 +192,7 @@ export default function Plans() {
                 >
                   <div className={cn("absolute -top-10 -right-10 w-40 h-40 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20", stat.color.replace('text-', 'bg-'))} />
                   <div className="flex items-center gap-6 relative z-10">
-                    <div className={cn("w-16 h-16 rounded-[24px] flex items-center justify-center transition-all group-hover:scale-110", stat.bg)}>
+                    <div className={cn("w-16 h-16 rounded-3xl flex items-center justify-center transition-all group-hover:scale-110", stat.bg)}>
                       <stat.icon className={cn("w-8 h-8", stat.color)} />
                     </div>
                     <div className="space-y-1">
@@ -226,7 +215,7 @@ export default function Plans() {
                   <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter">NEURAL RECOMMENDATIONS</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {activePlan.recommendations?.map((rec: string, i: number) => (
+                  {activePlan.recommendations?.map((rec, i) => (
                     <motion.div 
                       key={i} 
                       whileHover={{ x: 10 }}
@@ -270,7 +259,7 @@ export default function Plans() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-                      {activePlan.schedule![weekKey].map((day: PlanDay, i: number) => (
+                      {activePlan.schedule[weekKey].map((day, i) => (
                         <motion.div 
                           key={i} 
                           whileHover={{ scale: 1.05, y: -5 }}
@@ -285,7 +274,7 @@ export default function Plans() {
                             <span className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">{day.day}</span>
                             {day.duration > 0 && (
                               <div className="flex items-center gap-1 text-secondary">
-                                <Timer size={12} />
+                                <Activity size={12} />
                                 <span className="text-[10px] font-space font-black uppercase">{day.duration}M</span>
                               </div>
                             )}

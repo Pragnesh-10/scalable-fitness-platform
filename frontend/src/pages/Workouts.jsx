@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import api from '../lib/api';
 import { 
   Activity, 
   Plus, 
@@ -18,21 +16,12 @@ import {
   Flame,
   ArrowRight
 } from 'lucide-react';
-import { useAuthStore } from '@/lib/store';
+import { useAuthStore } from '../lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-
-type Workout = {
-  _id?: string;
-  title?: string;
-  type: string;
-  date?: string;
-  duration: number;
-  caloriesBurned?: number;
-};
+import { cn } from '../lib/utils';
 
 export default function Workouts() {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [workouts, setWorkouts] = useState([]);
   const [title, setTitle] = useState('');
   const [type, setType] = useState('running');
   const [duration, setDuration] = useState('');
@@ -61,7 +50,7 @@ export default function Workouts() {
   }, [loadFromStorage]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval;
     if (timerActive && timeLeft > 0) {
       interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     } else if (timeLeft === 0) {
@@ -70,7 +59,7 @@ export default function Workouts() {
     return () => clearInterval(interval);
   }, [timerActive, timeLeft]);
 
-  const handleAddWorkout = async (e: React.FormEvent) => {
+  const handleAddWorkout = async (e) => {
     e.preventDefault();
     try {
       await api.post('/workouts', {
@@ -87,7 +76,7 @@ export default function Workouts() {
     }
   };
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -111,7 +100,8 @@ export default function Workouts() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex justify-between items-center w-full px-12 py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+        className="fixed top-0 right-0 z-[60] flex justify-between items-center py-6 px-16 bg-black/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        style={{ left: 'var(--sidebar-width, 0px)' }}
       >
         <div className="flex items-center gap-4">
           <motion.div 
@@ -126,7 +116,7 @@ export default function Workouts() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsModalOpen(true)}
-          className="bg-white text-black px-10 py-3 rounded-2xl font-space font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-3 group"
+          className="bg-white text-black px-10 py-3 rounded-none font-space font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-3 group border-2 border-transparent hover:border-white hover:bg-black hover:text-white"
         >
           <Plus size={18} className="group-hover:rotate-90 transition-transform" />
           LOG MISSION
@@ -137,12 +127,12 @@ export default function Workouts() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-32 px-12 max-w-7xl mx-auto space-y-16"
+        className="pt-32 px-20 max-w-7xl mx-auto space-y-16"
       >
         {/* Workout Tracker Header */}
         <motion.section variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
           <div className="space-y-4">
-            <h1 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">
+            <h1 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9]">
               WORKOUT <br />
               <span className="text-[#6C63FF] italic">TRACKER</span>
             </h1>
@@ -173,7 +163,7 @@ export default function Workouts() {
             className="glass-card p-10 rounded-[56px] relative overflow-hidden group shadow-2xl"
           >
             {/* Background Texture Overlay */}
-            <div className="absolute inset-0 bg-[url('/Users/ypragnesh/.gemini/antigravity/brain/debf5f57-01ca-4acb-bef9-0c4062a6d7b3/strength_realistic_tactical_1777436798332.png')] bg-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000" />
+            <div className="absolute inset-0 bg-[url('/assets/generated/strength_realistic_tactical_1777436798332.png')] bg-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000" />
             
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-10">
@@ -182,7 +172,7 @@ export default function Workouts() {
                     <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
                     <span className="text-[10px] font-space font-black text-secondary uppercase tracking-[0.4em]">NEURAL FORM AI</span>
                   </div>
-                  <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter">ELBOW STABILITY</h3>
+                  <h3 className="text-4xl font-space font-black text-white uppercase tracking-tight">ELBOW STABILITY</h3>
                 </div>
                 <div className="bg-secondary/20 p-4 rounded-3xl border border-secondary/30">
                   <CheckCircle2 className="w-8 h-8 text-secondary" />
@@ -231,7 +221,7 @@ export default function Workouts() {
                   key={timeLeft}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-7xl font-space font-black text-white tracking-tighter"
+                  className="text-7xl font-space font-black text-white tracking-tight"
                 >
                   {formatTime(timeLeft)}
                 </motion.span>
@@ -263,14 +253,21 @@ export default function Workouts() {
         <motion.section variants={itemVariants}>
           <div className="flex justify-between items-center mb-12 px-2">
             <div className="space-y-2">
-              <h2 className="text-4xl font-space font-black text-white uppercase tracking-tighter">Operational History</h2>
+              <h2 className="text-4xl font-space font-black text-white uppercase tracking-tight">Operational History</h2>
               <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Audit log of past performance cycles</p>
             </div>
-            <div className="flex gap-6">
+            <div className="flex gap-4">
               <button className="glass-card p-4 rounded-2xl text-white/40 hover:text-white border border-white/5 transition-all">
                 <Search size={20} />
               </button>
-              <button className="glass-card px-8 py-4 rounded-2xl text-white font-space font-black text-[10px] uppercase tracking-[0.2em] border border-white/5 hover:border-white/20 transition-all flex items-center gap-3">
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-[#6C63FF] text-white px-12 py-6 rounded-none font-space font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/40 hover:bg-[#5a52e0] hover:scale-105 active:scale-95 transition-all flex items-center gap-4 group border-2 border-[#6C63FF]"
+              >
+                <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                LOG NEW MISSION
+              </button>
+              <button className="hidden md:flex glass-card px-8 py-4 rounded-2xl text-white font-space font-black text-[10px] uppercase tracking-[0.2em] border border-white/5 hover:border-white/20 transition-all items-center gap-3">
                 MONTHLY REPORT
                 <ChevronDown size={14} />
               </button>
@@ -289,7 +286,7 @@ export default function Workouts() {
                 <div className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                   <Activity size={48} className="text-white/10 group-hover:text-[#6C63FF] transition-colors" />
                 </div>
-                <h3 className="text-3xl font-space font-black text-white uppercase mb-4 tracking-tighter">No Active History</h3>
+                <h3 className="text-3xl font-space font-black text-white uppercase mb-4 tracking-tight">No Active History</h3>
                 <p className="text-white/40 font-lexend text-lg max-w-sm mb-10 leading-relaxed">The archive is empty. Begin your first mission to establish a bio-legacy.</p>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
@@ -315,7 +312,7 @@ export default function Workouts() {
                         {workout.type === 'running' ? <Zap size={32} /> : <Dumbbell size={32} />}
                       </div>
                       <div className="space-y-2">
-                        <h4 className="text-3xl font-space font-black text-white uppercase tracking-tighter group-hover:text-[#6C63FF] transition-colors">
+                        <h4 className="text-3xl font-space font-black text-white uppercase tracking-tight group-hover:text-[#6C63FF] transition-colors">
                           {workout.title || 'BIO-MISSION'}
                         </h4>
                         <div className="flex items-center gap-4">
@@ -359,7 +356,7 @@ export default function Workouts() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="glass-strong w-full max-w-xl rounded-[60px] overflow-hidden border border-white/10 shadow-3xl shadow-black/80"
+              className="glass-strong w-full max-w-xl rounded-none overflow-hidden border border-white/10 shadow-3xl shadow-black/80"
             >
               <div className="p-12 border-b border-white/5 flex justify-between items-center">
                 <div className="space-y-1">
@@ -375,7 +372,7 @@ export default function Workouts() {
                     type="text" 
                     value={title} 
                     onChange={e => setTitle(e.target.value)} 
-                    className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight placeholder-white/10 transition-all"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-none px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight placeholder-white/10 transition-all"
                     placeholder="e.g. ALPHA_STRENGTH"
                     required 
                   />
@@ -386,7 +383,7 @@ export default function Workouts() {
                     <select 
                       value={type} 
                       onChange={e => setType(e.target.value)}
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-white font-space font-black uppercase tracking-widest appearance-none transition-all"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-none px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-white font-space font-black uppercase tracking-widest appearance-none transition-all"
                     >
                       <option value="running">RUNNING</option>
                       <option value="strength">STRENGTH</option>
@@ -400,7 +397,7 @@ export default function Workouts() {
                       type="number" 
                       value={duration} 
                       onChange={e => setDuration(e.target.value)} 
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-none px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight"
                       placeholder="45"
                       required 
                     />
@@ -412,7 +409,7 @@ export default function Workouts() {
                     type="number" 
                     value={calories} 
                     onChange={e => setCalories(e.target.value)} 
-                    className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-none px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight"
                     placeholder="350"
                   />
                 </div>
@@ -421,7 +418,7 @@ export default function Workouts() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit" 
-                    className="w-full bg-[#6C63FF] text-white font-space font-black text-xs py-6 rounded-[30px] transition-all shadow-3xl shadow-[#6C63FF]/40 uppercase tracking-[0.4em]"
+                    className="w-full bg-[#6C63FF] text-white font-space font-black text-xs py-6 rounded-none transition-all shadow-3xl shadow-[#6C63FF]/40 uppercase tracking-[0.4em] border-2 border-[#6C63FF] hover:bg-[#5a52e0]"
                   >
                     AUTHORIZE BIO-LOG
                   </motion.button>
