@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
-import { Activity, Flame, Timer, Footprints, Bell, MoreHorizontal, ChevronRight, Zap } from 'lucide-react';
+import { Activity, Flame, Timer, Footprints, Bell, MoreHorizontal, ChevronRight, Zap, Target, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 interface Analytics {
@@ -30,149 +30,155 @@ export default function Dashboard() {
   }, [loadFromStorage]);
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center bg-[#030303] text-[#6C63FF]/50 animate-pulse font-space text-2xl uppercase tracking-widest">Initialising Pulse...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#030303] relative overflow-hidden">
+        <div className="orb orb-1 opacity-10 animate-pulse" />
+        <div className="flex flex-col items-center gap-6 relative z-10">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center animate-spin-slow shadow-lg shadow-[#6C63FF]/20">
+            <Zap className="w-8 h-8 text-white" fill="currentColor" />
+          </div>
+          <p className="font-space text-sm font-black text-white/40 uppercase tracking-[0.4em] animate-pulse">Initialising Pulse...</p>
+        </div>
+      </div>
+    );
   }
 
   const stats = [
-    { label: 'Heart Rate', value: data?.summary?.avgHR || 124, unit: 'BPM', color: 'text-secondary', glow: 'text-glow-cyan', icon: Activity },
-    { label: 'Calories', value: data?.summary?.totalCalories || 842, unit: 'KCAL', color: 'text-[#6C63FF]', glow: 'text-glow-purple', icon: Flame },
-    { label: 'Active', value: data?.summary?.activeMinutes || 45, unit: 'MINUTES', color: 'text-secondary', glow: 'text-glow-cyan', icon: Timer },
-    { label: 'Steps', value: (data?.summary?.totalSteps || 8432).toLocaleString(), unit: 'STEPS', color: 'text-[#6C63FF]', glow: 'text-glow-purple', icon: Footprints },
+    { label: 'HEART RATE', value: data?.summary?.avgHR || 124, unit: 'BPM', color: 'text-secondary', icon: Activity, trend: '+4%' },
+    { label: 'ENERGY BURN', value: data?.summary?.totalCalories || 842, unit: 'KCAL', color: 'text-[#6C63FF]', icon: Flame, trend: '-2%' },
+    { label: 'ACTIVE DURATION', value: data?.summary?.activeMinutes || 45, unit: 'MINS', color: 'text-secondary', icon: Timer, trend: '+12%' },
+    { label: 'MVT STEPS', value: (data?.summary?.totalSteps || 8432).toLocaleString(), unit: 'STEPS', color: 'text-[#6C63FF]', icon: Footprints, trend: '+1%' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#030303] text-[#e5e2e1] pb-32">
-      {/* Top Header */}
-      <header className="fixed top-0 z-50 flex justify-between items-center w-full px-6 py-4 bg-[#030303]/60 backdrop-blur-2xl border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-[#6C63FF]/30">
-            <img 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl1jmkv2EYMTubdoMED-uOj29fZ5sGhp6HiLFkWuBd9ju3qrZguVhZx9PdN66RNo_3lP4yOmmqEsk3TIhmp8B-1-NJYi4cj6M-OWmLvJc6e4IbY3UzGS8l0AITIDgMZrnGtObJ-H6_o7uFd37Pj9SBA8ywnzwctoTeYXYTJPAENsgeuKYotfHKb5jRXwm1xmOBQCcUyhwu_TflJnU4e2mW4qy0gfZjn_37dUSxwAgXH_t-AHB2vf7oIUsyFpTgxAKcUAfFGQsV7LNR" 
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <span className="text-xl font-black italic bg-gradient-to-r from-[#6C63FF] to-[#4ECDC4] bg-clip-text text-transparent font-space tracking-widest uppercase">FITPULSE</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="text-white/70 hover:text-white transition">
-            <Bell className="w-5 h-5" />
-          </button>
-        </div>
-      </header>
-
-      <main className="pt-24 px-6 max-w-5xl mx-auto space-y-12">
-        {/* Welcome & Status */}
-        <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="font-space text-5xl md:text-6xl font-black text-white uppercase tracking-tighter">
-              READY, <span className="text-[#6C63FF]">{user?.name?.split(' ')[0] || 'ATHLETE'}.</span>
+    <div className="min-h-screen bg-transparent text-[#e5e2e1] pb-32">
+      <main className="pt-12 px-8 max-w-7xl mx-auto space-y-12">
+        {/* Welcome Section */}
+        <section className="flex flex-col md:flex-row justify-between items-end gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-[10px] font-space font-bold text-[#6C63FF] uppercase tracking-[0.3em]">
+              <Target className="w-3 h-3" />
+              Operational Status: Active
+            </div>
+            <h1 className="font-space text-6xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none">
+              READY, <span className="gradient-text">{user?.name?.split(' ')[0] || 'ATHLETE'}.</span>
             </h1>
-            <p className="text-lg text-white/60 font-lexend mt-2">Fuel your ambition today.</p>
-          </div>
-          <div className="glass-card neo-shadow flex items-center gap-3 px-4 py-2 rounded-full border border-white/5">
-            <div className="relative">
-              <div className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse"></div>
-              <div className="absolute inset-0 w-2 h-2 bg-[#4ECDC4] rounded-full blur-sm opacity-50"></div>
-            </div>
-            <span className="text-[10px] font-space font-bold uppercase tracking-widest text-white/60">APPLE WATCH CONNECTED - SYNCING...</span>
-          </div>
-        </section>
-
-        {/* Stats Bento Grid */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, i) => (
-            <div key={i} className="glass-card p-6 rounded-3xl flex flex-col justify-between h-40 neo-shadow group hover:scale-[1.02] transition-transform">
-              <span className={`text-[10px] font-space font-bold uppercase tracking-widest ${stat.color}`}>{stat.label}</span>
-              <div>
-                <span className={`text-4xl font-space font-black text-white block ${stat.glow}`}>{stat.value}</span>
-                <span className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest">{stat.unit}</span>
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {/* Weekly Intensity Chart */}
-        <section className="glass-card p-8 rounded-[40px] neo-shadow relative overflow-hidden">
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h2 className="text-2xl font-space font-bold text-white uppercase">Weekly Intensity</h2>
-              <p className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest">7-Day Performance Trend</p>
-            </div>
-            <div className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-space font-bold text-[#4ECDC4] border border-[#4ECDC4]/20">
-              PEAK: 98%
-            </div>
+            <p className="text-white/40 font-lexend text-sm uppercase tracking-widest font-bold">Synchronizing biological telemetry...</p>
           </div>
           
-          <div className="h-48 flex items-end justify-between gap-3 md:gap-6">
-            {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day, i) => {
-              const height = [60, 45, 85, 30, 55, 90, 40][i];
-              const isPeak = height > 80;
-              return (
-                <div key={day} className="flex-1 bg-white/5 rounded-t-xl relative group">
-                  <div 
-                    className={`absolute bottom-0 w-full rounded-t-xl transition-all duration-700 ${
-                      isPeak 
-                        ? 'bg-gradient-to-t from-[#4ECDC4]/20 to-[#4ECDC4] shadow-[0_0_20px_rgba(78,205,196,0.3)]' 
-                        : 'bg-gradient-to-t from-[#6C63FF]/20 to-[#6C63FF]'
-                    }`}
-                    style={{ height: `${height}%` }}
-                  />
-                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-space font-bold text-white/30">{day}</span>
-                </div>
-              );
-            })}
+          <div className="glass-strong flex items-center gap-4 px-6 py-3 rounded-2xl border border-white/5 shadow-xl shadow-black/40">
+            <div className="relative">
+              <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-2 h-2 bg-secondary rounded-full blur-sm opacity-50"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-space font-bold uppercase tracking-widest text-white">Apple Watch Pro</span>
+              <span className="text-[9px] font-space font-bold text-white/40 uppercase tracking-widest">LIVE SYNC ACTIVE</span>
+            </div>
           </div>
         </section>
 
-        {/* Recommended Sessions */}
-        <section>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-space font-bold text-white uppercase">Recommended Sessions</h2>
-            <button className="text-[10px] font-space font-bold text-secondary uppercase tracking-widest hover:text-white transition">VIEW ALL</button>
-          </div>
-          <div className="flex gap-6 overflow-x-auto pb-6 hide-scrollbar -mx-6 px-6">
-            {[
-              { 
-                title: 'High-Intensity Interval Training', 
-                duration: '30 MIN', 
-                level: 'HARD', 
-                kcal: '450 KCAL',
-                img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAJaMJ2zsalRy_HTv3RF_1yqL3R_kgsketWL1Us8RhYyjzqAkVgGl9JHsfHZPXUIdRo-t_q0LMw4Bdle058vZ0PEDK3U5PJn_q5DG6Zyu323Z5S8wtXNTrms91F9NDWf_kVsS5NkHknipN3VAbVYv6paP7j_uH053MFFrN0hJAfjSXMTfZ1qmZnhsLn5vVjoAKqt8K-ol06b-Xzogb_oTGtEWHw96HCpyxniNsNPe6R74csbgjDtiYOBIe169zoXnuXrhh_6go3TmJX'
-              },
-              { 
-                title: 'Power Yoga Flow', 
-                duration: '45 MIN', 
-                level: 'MODERATE', 
-                kcal: '220 KCAL',
-                img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBv1KQsFxXmVJcdaTdbhNDLitcrUBL85LPvZJeRGTSE2tDeOIyYKYTH7i8Cg_09UrJZDylleMtxz8EiLDaEVgxdx_zw_NV8UPJGZBSrlisF6xLZy0knHvDspSbW3K494rre8fko3T0WPwogGN95cArbbCWl_8MIf9T-iD11AhGyd-BV_-KQc3Mi1gzODnexRr8X-5un5E24k1W97oAxLvzmNmDe3Da9r2S9tpVV5oBthazCU1SRrcAj3iDXbWbrrugJcBbb64Uh0a9y'
-              },
-              { 
-                title: 'Strength Foundations', 
-                duration: '50 MIN', 
-                level: 'HARD', 
-                kcal: '600 KCAL',
-                img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3gDC8MsiTrdZ6mPRap2Z5MxWzUU1LZo3F3O2e7uSNkYDC3Mh8p4dqPznxNM24aYYFKpYh8rkoo4VRIq750Z47X265jAbuZsKG-N8nU0Yc_03QPOLUcwYU0bMq65CKeU08eCz50jRwzuRfXiTJCPB_-lLMGlAghT9vefAz94qIhoNKPwtOZKcWCnxevDgIWmUE_VUNasME5ntNsSM9FPmoq4AzpCECvb4E-fF68azlU0POacWCuvsJVQ78K2jqMQd4bmLs7S6G7Wpt'
-              }
-            ].map((workout, i) => (
-              <div key={i} className="min-w-[280px] h-[360px] rounded-[32px] overflow-hidden relative group cursor-pointer">
-                <img src={workout.img} alt={workout.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="flex gap-2 mb-3">
-                    <span className="glass-card px-3 py-1 rounded-full text-[10px] font-space font-bold text-secondary">{workout.duration}</span>
-                    <span className="glass-card px-3 py-1 rounded-full text-[10px] font-space font-bold text-white">{workout.level}</span>
+        {/* Stats Grid */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon;
+            return (
+              <div key={i} className="glass-card p-8 rounded-[32px] group relative overflow-hidden">
+                <div className="flex justify-between items-start mb-8">
+                  <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 group-hover:border-[#6C63FF]/30 transition-colors`}>
+                    <Icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
-                  <h3 className="text-xl font-space font-bold text-white mb-2 leading-tight">{workout.title}</h3>
-                  <div className="flex items-center gap-2 text-white/60">
-                    <Zap className="w-3 h-3 text-secondary" />
-                    <span className="text-[10px] font-space font-bold uppercase tracking-widest">{workout.kcal}</span>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-space font-bold text-white/30 uppercase tracking-widest">{stat.label}</span>
+                    <div className="flex items-center gap-1 text-[10px] font-space font-bold text-secondary">
+                      <TrendingUp className="w-3 h-3" />
+                      {stat.trend}
+                    </div>
                   </div>
                 </div>
+                <div>
+                  <span className="text-5xl font-space font-black text-white block tracking-tighter group-hover:scale-110 transition-transform origin-left duration-500">{stat.value}</span>
+                  <span className="text-[10px] font-space font-bold text-white/20 uppercase tracking-[0.2em]">{stat.unit}</span>
+                </div>
+                {/* Decorative background icon */}
+                <Icon className="absolute -right-8 -bottom-8 w-32 h-32 text-white/[0.02] -rotate-12 group-hover:rotate-0 transition-transform duration-700" />
               </div>
-            ))}
-          </div>
+            );
+          })}
         </section>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Weekly Intensity - Takes 2 columns */}
+          <section className="lg:col-span-2 glass-strong p-10 rounded-[48px] border border-white/10 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-12">
+              <div>
+                <h2 className="text-3xl font-space font-black text-white uppercase tracking-tighter">Performance Load</h2>
+                <p className="text-[10px] font-space font-bold text-white/40 uppercase tracking-[0.2em]">Weekly biological intensity trend</p>
+              </div>
+              <button className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <MoreHorizontal className="w-5 h-5 text-white/40" />
+              </button>
+            </div>
+            
+            <div className="h-64 flex items-end justify-between gap-4">
+              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day, i) => {
+                const height = [60, 45, 85, 30, 55, 90, 40][i];
+                const isPeak = height > 80;
+                return (
+                  <div key={day} className="flex-1 group relative">
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] font-space font-black text-white bg-white/10 px-2 py-1 rounded-md">{height}%</span>
+                    </div>
+                    <div 
+                      className={`w-full rounded-2xl transition-all duration-1000 ease-out cursor-pointer ${
+                        isPeak 
+                          ? 'bg-gradient-to-t from-secondary/20 to-secondary shadow-[0_0_30px_rgba(78,205,196,0.3)]' 
+                          : 'bg-gradient-to-t from-[#6C63FF]/20 to-[#6C63FF]'
+                      }`}
+                      style={{ height: `${height}%` }}
+                    />
+                    <span className="block mt-4 text-center text-[10px] font-space font-bold text-white/20 group-hover:text-white transition-colors tracking-widest">{day}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Tactical Recommendations */}
+          <section className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-space font-black text-white uppercase tracking-tighter">Ops Briefing</h2>
+              <button className="text-[9px] font-space font-bold text-[#6C63FF] uppercase tracking-widest border-b border-[#6C63FF]/30 pb-0.5 hover:text-white transition-colors">Tactical View</button>
+            </div>
+            
+            <div className="space-y-4">
+              {[
+                { title: 'HYPERTROPHY PHASE', duration: '45m', kcal: '600', icon: Zap, color: 'text-[#6C63FF]' },
+                { title: 'V02 MAX INTERVALS', duration: '30m', kcal: '450', icon: Activity, color: 'text-secondary' },
+                { title: 'RECOVERY FLOW', duration: '20m', kcal: '120', icon: Timer, color: 'text-white/40' },
+              ].map((item, i) => (
+                <div key={i} className="glass-card p-5 rounded-3xl flex items-center gap-4 group cursor-pointer border border-white/5 hover:border-white/10 transition-all">
+                  <div className={`w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform`}>
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xs font-space font-black text-white uppercase tracking-wider">{item.title}</h4>
+                    <div className="flex gap-3 mt-1">
+                      <span className="text-[9px] font-space font-bold text-white/30 uppercase tracking-widest">{item.duration}</span>
+                      <span className="text-[9px] font-space font-bold text-white/30 uppercase tracking-widest">{item.kcal} KCAL</span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-white transition-colors" />
+                </div>
+              ))}
+            </div>
+
+            <div className="glass-strong p-6 rounded-3xl border border-[#6C63FF]/20 bg-gradient-to-br from-[#6C63FF]/10 to-transparent">
+              <p className="text-[10px] font-space font-black text-[#6C63FF] uppercase tracking-widest mb-2">NEURAL INSIGHT</p>
+              <p className="text-xs text-white/60 leading-relaxed font-lexend italic">"Your recovery index is at 92%. Optimal conditions for high-intensity power output detected."</p>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );
