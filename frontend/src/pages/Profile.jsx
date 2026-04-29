@@ -119,7 +119,7 @@ export default function Profile() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex justify-between items-center w-full px-12 py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-6 md:px-8 lg:px-12 py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -141,7 +141,7 @@ export default function Profile() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-32 px-12 max-w-4xl mx-auto space-y-20 relative z-10"
+        className="pt-32 max-w-4xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 relative z-10"
       >
         {/* User Profile Header */}
         <motion.section variants={itemVariants} className="flex flex-col items-center text-center space-y-8">
@@ -165,7 +165,7 @@ export default function Profile() {
             </motion.div>
           </div>
           <div className="space-y-2">
-            <h2 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none px-1">{user.name}</h2>
+            <h2 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">{user.name}</h2>
             <div className="flex items-center justify-center gap-4">
               <span className="font-space text-[11px] text-secondary tracking-[0.4em] uppercase font-black">ELITE OPERATIVE</span>
               <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
@@ -206,7 +206,7 @@ export default function Profile() {
         </motion.section>
 
         {/* Strength Index Visualization */}
-        <motion.section variants={itemVariants} className="glass-strong rounded-[56px] p-12 relative overflow-hidden border border-white/5 shadow-3xl group">
+        <motion.section variants={itemVariants} className="glass-strong rounded-[56px] p-8 sm:p-10 md:p-12 relative overflow-hidden border border-white/5 shadow-3xl group">
           <div className="absolute inset-0 bg-[linear-gradient(transparent_98%,rgba(255,255,255,0.02)_98%)] bg-[size:100%_40px] pointer-events-none" />
           
           <div className="flex items-center justify-between mb-12 relative z-10">
@@ -215,7 +215,7 @@ export default function Profile() {
                 <TrendingUp size={16} className="text-secondary" />
                 <span className="text-[10px] font-space font-black text-secondary uppercase tracking-[0.4em]">STRENGTH ARCHIVE</span>
               </div>
-              <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic">+12.4% <span className="text-white/20 text-xl font-normal not-italic tracking-normal">CURRENT_MONTH</span></h3>
+              <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic pl-2 sm:pl-3">+12.4% <span className="text-white/20 text-xl font-normal not-italic tracking-normal">CURRENT_MONTH</span></h3>
             </div>
             <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:rotate-45 transition-all">
               <Activity className="w-8 h-8 text-white/40" />
@@ -288,7 +288,7 @@ export default function Profile() {
         <motion.section variants={itemVariants} className="space-y-8">
           <div className="flex items-center gap-4 px-4">
             <Settings size={24} className="text-white/40" />
-            <h3 className="text-3xl font-space font-black text-white uppercase tracking-tighter italic">Tactical Config</h3>
+            <h3 className="text-3xl font-space font-black text-white uppercase tracking-tighter italic pl-2 sm:pl-3">Tactical Config</h3>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -312,7 +312,7 @@ export default function Profile() {
             </div>
             
             {/* Wearable Connectivity */}
-            <div className="glass-strong p-10 rounded-[48px] border border-white/5 shadow-3xl space-y-10 relative overflow-hidden">
+            <div className="glass-strong p-8 sm:p-10 rounded-[48px] border border-white/5 shadow-3xl space-y-8 sm:space-y-10 relative overflow-hidden">
                {/* Grid Background */}
                <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[size:100%_4px] pointer-events-none opacity-30" />
                

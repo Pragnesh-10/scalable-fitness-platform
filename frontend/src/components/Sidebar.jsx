@@ -64,7 +64,7 @@ export default function Sidebar() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col"
           >
-            <span className="text-2xl font-black italic tracking-tighter text-white font-space uppercase leading-none px-1">FITPULSE</span>
+            <span className="text-2xl font-black italic tracking-tighter text-white font-space uppercase leading-none px-1">FITTRACK</span>
             <span className="text-[8px] font-space font-bold text-[#6C63FF] tracking-[0.4em] mt-1">ELITE CORE</span>
           </motion.div>
         )}

@@ -36,12 +36,21 @@ export const useAuthStore = create((set) => ({
   register: async (userData) => {
     set({ isLoading: true });
     try {
+      console.log('🔐 Sending registration request to:', api.defaults.baseURL + '/auth/register');
+      console.log('📦 Payload:', userData);
       const { data } = await api.post('/auth/register', userData);
+      console.log('✨ Server response:', data);
       localStorage.setItem('fitpulse_token', data.token);
       localStorage.setItem('fitpulse_user', JSON.stringify(data.user));
       set({ user: data.user, token: data.token, isAuthenticated: true, isLoading: false });
       return data;
     } catch (error) {
+      console.error('🚨 API Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: error.config
+      });
       set({ isLoading: false });
       throw error;
     }

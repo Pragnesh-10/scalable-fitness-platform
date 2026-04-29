@@ -11,12 +11,16 @@ export default function Register() {
   const handleRegister = async (data) => {
     setError('');
     try {
-      await register(data);
+      console.log('🚀 Attempting registration with:', { email: data.email, name: data.name });
+      const result = await register(data);
+      console.log('✅ Registration successful:', result);
       navigate('/dashboard');
     } catch (err) {
-      console.error('Registration error:', err);
-      const message = err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Registration failed';
-      throw new Error(message);
+      console.error('❌ Registration error:', err);
+      console.log('Response data:', err.response?.data);
+      const message = err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || err.message || 'Registration failed';
+      console.log('Extracted message:', message);
+      setError(message);
     }
   };
 

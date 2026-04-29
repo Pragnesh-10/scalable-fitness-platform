@@ -22,7 +22,7 @@ export default function LandingPage() {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center shadow-lg shadow-[#6C63FF]/20 group-hover:scale-110 transition-transform">
             <Zap size={24} fill="currentColor" />
           </div>
-          <span className="text-2xl font-space font-black tracking-tighter uppercase italic">FITPULSE</span>
+          <span className="text-2xl font-space font-black tracking-tighter uppercase italic">FITTRACK</span>
         </div>
         
         <div className="hidden md:flex items-center gap-12 text-[10px] font-space font-black tracking-[0.3em] text-white/40 uppercase">
@@ -69,7 +69,7 @@ export default function LandingPage() {
               <span className="text-[10px] font-space font-black uppercase tracking-[0.3em] text-white/60">SQUADRON STATUS: ACTIVE</span>
             </div>
             
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter uppercase mb-6 leading-tight break-words whitespace-normal px-1">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter uppercase mb-6 leading-tight break-words whitespace-normal">
               BEYOND<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/40 to-[#6C63FF]">LIMITS</span>
             </h1>
@@ -134,7 +134,7 @@ export default function LandingPage() {
             <div className="space-y-8 sm:space-y-12">
               <div className="space-y-4">
                 <h2 className="text-[10px] font-space font-black text-[#6C63FF] uppercase tracking-[0.5em]">CORE CAPABILITIES</h2>
-                <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-black uppercase tracking-tighter leading-tight break-words whitespace-normal px-1">
+                <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-black uppercase tracking-tighter leading-tight break-words whitespace-normal">
                   TACTICAL<br />INTELLIGENCE
                 </h3>
               </div>
@@ -220,7 +220,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-10">
           <div className="flex items-center gap-3">
             <Zap size={24} className="text-[#6C63FF]" />
-            <span className="text-lg sm:text-xl font-space font-black tracking-tighter uppercase italic text-white/40">FITPULSE v2.4</span>
+            <span className="text-lg sm:text-xl font-space font-black tracking-tighter uppercase italic text-white/40">FITTRACK v2.4</span>
           </div>
           
           <div className="flex flex-wrap justify-center gap-6 sm:gap-10 text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-widest">
@@ -230,7 +230,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-[9px] sm:text-[10px] font-space font-bold text-white/10 uppercase tracking-[0.2em] text-center md:text-right">
-            © 2026 FITPULSE OPERATIONAL COMMAND. ALL RIGHTS RESERVED.
+            © 2026 FITTRACK OPERATIONAL COMMAND. ALL RIGHTS RESERVED.
           </p>
         </div>
       </footer>

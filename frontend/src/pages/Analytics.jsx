@@ -54,7 +54,7 @@ export default function Analytics() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-8 md:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF6B6B] to-[#6C63FF] flex items-center justify-center shadow-lg shadow-rose-500/20">
@@ -77,7 +77,7 @@ export default function Analytics() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-28 md:pt-32 px-4 sm:px-6 md:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-12 md:space-y-16 relative z-10"
+        className="pt-28 md:pt-32 w-full max-w-7xl mx-auto space-y-8 sm:space-y-12 md:space-y-16 relative z-10"
       >
         {/* Page Title */}
         <motion.section variants={itemVariants} className="space-y-4 text-center lg:text-left w-full">
@@ -122,14 +122,14 @@ export default function Analytics() {
         </motion.section>
 
         {/* Chart Visualization */}
-        <motion.section variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 glass-strong p-12 rounded-[64px] border border-white/5 relative overflow-hidden group shadow-3xl">
+        <motion.section variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10">
+          <div className="lg:col-span-2 glass-strong p-8 sm:p-10 md:p-12 rounded-[64px] border border-white/5 relative overflow-hidden group shadow-3xl flex flex-col">
             {/* Chart Grid Lines */}
             <div className="absolute inset-0 bg-[linear-gradient(transparent_98%,rgba(255,255,255,0.02)_98%),linear-gradient(90deg,transparent_98%,rgba(255,255,255,0.02)_98%)] bg-[size:50px_50px] pointer-events-none" />
             
-            <div className="flex justify-between items-center mb-16 relative z-10">
-              <div className="space-y-1">
-                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic px-1">BIO-SCAN FEED</h2>
+            <div className="flex justify-between items-center pb-8 sm:pb-10 relative z-10 border-b border-white/10">
+              <div className="space-y-1 pl-8 sm:pl-10 md:pl-12">
+                <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic leading-none whitespace-nowrap">BIO-SCAN FEED</h2>
                 <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">REAL-TIME TELEMETRY STREAMING</p>
               </div>
               <div className="flex gap-4">
@@ -143,7 +143,7 @@ export default function Analytics() {
               </div>
             </div>
 
-            <div className="h-[300px] sm:h-[450px] w-full relative z-10">
+            <div className="pt-8 sm:pt-10 h-[300px] sm:h-[450px] w-full relative z-10 flex-1">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -197,7 +197,7 @@ export default function Analytics() {
             {/* AI Intelligence Card */}
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="glass-card p-8 sm:p-12 rounded-[48px] sm:rounded-[64px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent relative overflow-hidden flex flex-col group flex-1 shadow-3xl"
+              className="glass-card p-6 sm:p-8 md:p-12 rounded-[48px] sm:rounded-[64px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent relative overflow-hidden flex flex-col group flex-1 shadow-3xl"
             >
               {/* Scanline Effect */}
               <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[size:100%_4px] pointer-events-none opacity-30" />
@@ -233,7 +233,7 @@ export default function Analytics() {
         </motion.section>
 
         {/* Global Stats Footer */}
-        <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 mt-8 sm:mt-12">
           {[
             { label: 'TOTAL MISSION TIME', val: '242.5 HOURS', icon: Cpu, color: 'text-white/40' },
             { label: 'VO2 MAX INDEX', val: '52.4 ML/KG/MIN', icon: ShieldAlert, color: 'text-secondary' },

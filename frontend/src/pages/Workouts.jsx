@@ -100,7 +100,7 @@ export default function Workouts() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 right-0 z-[60] flex justify-between items-center py-4 md:py-6 px-4 sm:px-8 md:px-16 bg-black/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        className="fixed top-0 right-0 z-[60] flex justify-between items-center py-4 md:py-6 px-4 sm:px-6 md:px-8 lg:px-12 bg-black/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{ left: 'var(--sidebar-width, 0px)' }}
       >
         <div className="flex items-center gap-4">
@@ -128,12 +128,12 @@ export default function Workouts() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-28 md:pt-32 px-4 sm:px-8 md:px-12 lg:px-20 w-full max-w-7xl mx-auto space-y-12 md:space-y-16"
+        className="pt-28 md:pt-32 w-full max-w-7xl mx-auto px-6 sm:px-10 md:px-12 space-y-8 sm:space-y-12 md:space-y-16 relative z-10"
       >
         {/* Workout Tracker Header */}
         <motion.section variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-          <div className="space-y-4">
-            <h1 className="font-space text-5xl sm:text-7xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9] break-words px-1">
+          <div className="left-panel">
+            <h1 className="font-space text-5xl sm:text-7xl md:text-8xl font-black text-white uppercase tracking-tight leading-[0.9] break-words">
               WORKOUT <br />
               <span className="text-[#6C63FF] italic">TRACKER</span>
             </h1>
@@ -142,7 +142,7 @@ export default function Workouts() {
           <div className="flex gap-6">
             <motion.div 
               whileHover={{ y: -5 }}
-              className="glass-card rounded-[32px] p-8 flex flex-col items-center min-w-[140px] border border-white/10 shadow-2xl"
+              className="glass-card p-6 sm:p-8 rounded-[32px] p-8 flex flex-col items-center min-w-[140px] border border-white/10 shadow-2xl"
             >
               <span className="text-[10px] font-space font-black text-white/30 uppercase tracking-[0.4em] mb-3">STREAK</span>
               <div className="flex items-center gap-3">
@@ -157,7 +157,7 @@ export default function Workouts() {
         </motion.section>
 
         {/* Form Check & Timer */}
-        <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <motion.section variants={itemVariants} className="main-layout">
           {/* Form Check AI */}
           <motion.div 
             whileHover={{ scale: 1.01 }}
@@ -168,12 +168,11 @@ export default function Workouts() {
             
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-10">
-                <div className="space-y-3">
+                <div className="left-panel">
                   <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
                     <span className="text-[10px] font-space font-black text-secondary uppercase tracking-[0.4em]">NEURAL FORM AI</span>
                   </div>
-                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight px-1">ELBOW STABILITY</h3>
+                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight section-header">ELBOW STABILITY</h3>
                 </div>
                 <div className="bg-secondary/20 p-4 rounded-3xl border border-secondary/30">
                   <CheckCircle2 className="w-8 h-8 text-secondary" />
@@ -182,12 +181,7 @@ export default function Workouts() {
               <p className="text-white/60 font-lexend text-base sm:text-lg leading-relaxed mb-10">
                 "Operational data indicates excessive flare. Tuck elbows closer to the thoracic cage to maximize tricep torque."
               </p>
-              <div className="flex items-center gap-4">
-                <div className="flex -space-x-2">
-                  {[1,2,3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-[#030303] bg-[#1a1a1a]" />)}
-                </div>
-                <span className="text-[10px] font-space font-black text-white/30 uppercase tracking-widest">LIVE WITH 2,842 USERS</span>
-              </div>
+              <p className="text-[10px] font-space font-black text-white/30 uppercase tracking-widest">LIVE WITH 2,842 USERS</p>
             </div>
           </motion.div>
 
@@ -253,8 +247,8 @@ export default function Workouts() {
         {/* Activity Log */}
         <motion.section variants={itemVariants}>
           <div className="flex justify-between items-center mb-12 px-2">
-            <div className="space-y-2">
-              <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight">Operational History</h2>
+            <div className="left-panel">
+              <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tight section-header">Operational History</h2>
               <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Audit log of past performance cycles</p>
             </div>
             <div className="flex gap-4">
@@ -362,7 +356,7 @@ export default function Workouts() {
             >
               <div className="p-8 sm:p-12 border-b border-white/5 flex justify-between items-center">
                 <div className="space-y-1">
-                  <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic">LOG MISSION</h2>
+                  <h2 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic pl-2 sm:pl-3">LOG MISSION</h2>
                   <p className="text-[9px] sm:text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Manual performance data upload</p>
                 </div>
                 <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border border-white/10 text-white/40 hover:text-white text-2xl sm:text-3xl transition-all flex items-center justify-center">&times;</button>

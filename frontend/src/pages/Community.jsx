@@ -72,7 +72,7 @@ export default function Community() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex flex-col sm:flex-row justify-between items-center w-full px-4 sm:px-8 md:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5 gap-4"
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shadow-lg shadow-secondary/20">
@@ -107,7 +107,7 @@ export default function Community() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-40 sm:pt-32 px-4 sm:px-6 md:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-12 md:space-y-16 relative z-10"
+        className="pt-40 sm:pt-32 w-full max-w-7xl mx-auto space-y-8 sm:space-y-12 md:space-y-16 relative z-10"
       >
         {/* Community Header */}
         <motion.section variants={itemVariants} className="space-y-4 w-full">
@@ -143,7 +143,7 @@ export default function Community() {
               <div className="flex items-center justify-between px-4">
                 <div className="flex items-center gap-4">
                   <Trophy size={32} className="text-secondary" />
-                  <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic">Global Rankings</h3>
+                  <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic pl-2 sm:pl-3">Global Rankings</h3>
                 </div>
                 <div className="glass-card px-8 py-3 rounded-2xl flex items-center gap-4 border border-white/10">
                   <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
@@ -215,7 +215,7 @@ export default function Community() {
               <div className="flex flex-col sm:flex-row items-center justify-between px-4 gap-4">
                 <div className="flex items-center gap-4">
                   <Target size={32} className="text-[#6C63FF]" />
-                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic">Tactical Operations</h3>
+                  <h3 className="text-3xl sm:text-4xl font-space font-black text-white uppercase tracking-tighter italic pl-2 sm:pl-3">Tactical Operations</h3>
                 </div>
                 <div className="glass-card px-6 sm:px-8 py-2 sm:py-3 rounded-2xl flex items-center gap-4 border border-white/10">
                   <Users size={14} className="text-[#6C63FF]" />

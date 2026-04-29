@@ -35,10 +35,10 @@ const allowedOrigins = unique([
   process.env.FRONTEND_URL,
   process.env.PROD_FRONTEND_URL,
   process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-  !isProduction ? 'http://localhost:3000' : null,
-  !isProduction ? 'http://127.0.0.1:3000' : null,
-  !isProduction ? 'http://localhost:5173' : null,
-  !isProduction ? 'http://127.0.0.1:5173' : null,
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
 ].map(normalizeOrigin));
 
 const corsOptions = {

@@ -86,7 +86,7 @@ export default function Plans() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-8 md:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shadow-lg shadow-secondary/30">
@@ -111,12 +111,12 @@ export default function Plans() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-28 md:pt-32 px-4 sm:px-8 md:px-12 lg:px-20 w-full max-w-7xl mx-auto space-y-12 md:space-y-16 relative z-10"
+        className="pt-28 md:pt-32 w-full max-w-7xl mx-auto space-y-8 sm:space-y-12 md:space-y-16 relative z-10"
       >
         {/* Plans Header */}
         <motion.section variants={itemVariants} className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
           <div className="space-y-4">
-            <h1 className="font-space text-5xl sm:text-7xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8] break-words px-1">
+            <h1 className="font-space text-5xl sm:text-7xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.8] break-words">
               TACTICAL <br />
               <span className="text-secondary italic">DIRECTIVES</span>
             </h1>
@@ -148,7 +148,7 @@ export default function Plans() {
         {!activePlan ? (
           <motion.section 
             variants={itemVariants}
-            className="min-h-[50vh] sm:h-[60vh] glass-strong rounded-[40px] sm:rounded-[60px] border border-white/5 relative overflow-hidden flex flex-col items-center justify-center text-center p-8 sm:p-20 shadow-3xl"
+            className="min-h-[50vh] sm:h-[60vh] glass-strong rounded-[40px] sm:rounded-[60px] border border-white/5 relative overflow-hidden flex flex-col items-center justify-center text-center p-6 sm:p-10 md:p-16 shadow-3xl"
           >
             {/* Background Commander */}
             <div className="absolute inset-0 bg-[url('/assets/generated/ai_commander_tactical_1777436865732.png')] bg-cover opacity-20 grayscale pointer-events-none" />
@@ -180,7 +180,7 @@ export default function Plans() {
         ) : (
           <div className="space-y-16">
             {/* Mission Stats */}
-            <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
               {[
                 { label: 'OPERATIONAL FOCUS', val: activePlan.planType.replace('_', ' '), icon: Target, color: 'text-[#6C63FF]', bg: 'bg-[#6C63FF]/10' },
                 { label: 'INTENSITY LEVEL', val: activePlan.difficulty, icon: Activity, color: 'text-secondary', bg: 'bg-secondary/10' },
@@ -206,7 +206,7 @@ export default function Plans() {
             </motion.section>
 
             {/* Tactical Directives */}
-            <motion.section variants={itemVariants} className="glass-strong p-8 sm:p-12 rounded-[40px] sm:rounded-[64px] relative overflow-hidden border border-white/5 shadow-3xl group">
+            <motion.section variants={itemVariants} className="glass-strong p-8 sm:p-10 md:p-12 rounded-[40px] sm:rounded-[64px] relative overflow-hidden border border-white/5 shadow-3xl group">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#6C63FF]/10 via-transparent to-transparent" />
               <div className="relative z-10">
                 <div className="flex items-center gap-5 mb-12">

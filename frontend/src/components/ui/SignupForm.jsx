@@ -90,6 +90,7 @@ export default function SignupForm({ onSubmit, isLoading, error: externalError }
     e.preventDefault();
     setLocalError("");
     try {
+      console.log('📝 Submitting form with role:', form.role);
       await onSubmit({
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,
@@ -99,6 +100,7 @@ export default function SignupForm({ onSubmit, isLoading, error: externalError }
         registrationKey: form.role === 'coach' ? form.registrationKey : undefined
       });
     } catch (err) {
+      console.error('Form submission error:', err);
       setLocalError(err.message || "Registration failed");
     }
   };
