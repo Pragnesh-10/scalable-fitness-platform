@@ -1,4 +1,4 @@
-# 🏋️ FitPulse - Scalable Fitness Application
+# 🏋️ FitTrack - Scalable Fitness Application
 
 A modern, full-stack fitness tracking application with real-time analytics, workout management, community features, and wearable device integration.
 
