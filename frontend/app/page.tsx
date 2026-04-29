@@ -1,197 +1,238 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { BarChart3, Users, Target, Zap, ShieldCheck, ArrowRight, BrainCircuit, Activity, HeartPulse, LogIn, UserPlus } from 'lucide-react';
-import { HeroGeometric } from '@/components/ui/shape-landing-hero';
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { 
+  Zap, 
+  Activity, 
+  Target, 
+  Trophy, 
+  ChevronRight, 
+  ArrowRight,
+  ShieldCheck,
+  Smartphone,
+  Globe
+} from "lucide-react";
 
-export default function Home() {
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  };
-
-  const stagger = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#030303] text-white overflow-x-hidden font-lexend">
-      {/* Top Navigation */}
-      <nav className="fixed top-0 w-full z-[100] px-6 py-4 flex justify-between items-center bg-black/40 backdrop-blur-2xl border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" fill="currentColor" />
+    <div className="min-h-screen bg-[#030303] text-white selection:bg-[#6C63FF]/30">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 w-full z-[100] px-6 py-8 flex justify-between items-center bg-gradient-to-b from-[#030303] to-transparent">
+        <div className="flex items-center gap-3 group cursor-pointer">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center shadow-lg shadow-[#6C63FF]/20 group-hover:scale-110 transition-transform">
+            <Zap size={24} fill="currentColor" />
           </div>
-          <span className="text-xl font-black italic tracking-tighter text-white font-space uppercase">FITPULSE</span>
+          <span className="text-2xl font-space font-black tracking-tighter uppercase italic">FITPULSE</span>
         </div>
-        <div className="hidden md:flex items-center gap-8">
-          <Link href="#features" className="text-[10px] font-space font-bold text-white/40 hover:text-white uppercase tracking-widest transition-colors">FEATURES</Link>
-          <Link href="/login" className="text-[10px] font-space font-bold text-white/40 hover:text-white uppercase tracking-widest transition-colors">LOG IN</Link>
-          <Link href="/register" className="bg-white text-black px-6 py-2 rounded-full font-space font-bold text-[10px] uppercase tracking-widest hover:bg-[#6C63FF] hover:text-white transition-all shadow-lg shadow-white/5">
-            CREATE ACCOUNT
+        
+        <div className="hidden md:flex items-center gap-12 text-[10px] font-space font-black tracking-[0.3em] text-white/40 uppercase">
+          <Link href="#features" className="hover:text-[#6C63FF] transition-colors">CAPABILITIES</Link>
+          <Link href="#tech" className="hover:text-secondary transition-colors">TECHNOLOGY</Link>
+          <Link href="#community" className="hover:text-white transition-colors">COHORT</Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Link href="/login">
+            <button className="px-6 py-3 rounded-xl font-space font-black text-[10px] uppercase tracking-widest text-white/60 hover:text-white transition-colors">
+              RECALL SESSION
+            </button>
+          </Link>
+          <Link href="/register">
+            <button className="px-8 py-3.5 rounded-xl bg-white text-black font-space font-black text-[10px] uppercase tracking-widest hover:bg-[#6C63FF] hover:text-white transition-all shadow-xl shadow-white/5">
+              ENROLL NOW
+            </button>
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="relative min-h-screen flex flex-col justify-center items-center px-6 pt-20">
-        <div className="relative z-10 w-full flex flex-col items-center">
-          <HeroGeometric 
-            badge="ELITE PERFORMANCE INTERFACE V2.0" 
-            title1="TRANSFORM YOUR" 
-            title2="FITNESS JOURNEY" 
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 overflow-hidden">
+        {/* Realistic Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/Users/ypragnesh/.gemini/antigravity/brain/debf5f57-01ca-4acb-bef9-0c4062a6d7b3/realistic_fitness_hero_1777436506277.png" 
+            alt="Hero Background" 
+            className="w-full h-full object-cover opacity-40 mix-blend-luminosity scale-105"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-[#030303]/40 to-[#030303]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-transparent to-[#030303]" />
         </div>
-        
-        {/* Relocated CTAs: Integrated into the bottom of the hero view */}
-        <div className="w-full flex flex-col items-center gap-6 mt-12 md:absolute md:bottom-20 md:left-1/2 md:-translate-x-1/2 z-[100] pb-20 md:pb-0">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+
+        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none justify-center px-4"
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <Link href="/register" className="inline-flex items-center justify-center gap-3 bg-white text-black font-space font-black px-12 py-5 rounded-full hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.2)] uppercase text-xs tracking-widest group text-center whitespace-nowrap">
-              <UserPlus className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-              CREATE ACCOUNT
-            </Link>
-            <Link href="/login" className="inline-flex items-center justify-center gap-3 bg-white/5 backdrop-blur-2xl border border-white/10 text-white font-space font-black px-12 py-5 rounded-full hover:bg-white/10 transition-all duration-300 uppercase text-xs tracking-widest text-center whitespace-nowrap">
-              <LogIn className="w-4 h-4" />
-              LOG IN
-            </Link>
-          </motion.div>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            transition={{ delay: 1.5 }}
-            className="text-[10px] font-space font-bold uppercase tracking-[0.4em] text-white text-center"
-          >
-            AUTHORIZED PERSONNEL ONLY
-          </motion.p>
-        </div>
-      </div>
-      
-      {/* Tactical Stats Overview */}
-      <section className="relative z-10 -mt-16 pb-32 px-6">
-        <motion.div 
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
-        >
-          {[
-            { label: 'ACTIVE USERS', value: '4.2K+', icon: Activity, color: '#6C63FF' },
-            { label: 'CALORIES BURNED', value: '1.8M+', icon: Zap, color: '#4ECDC4' },
-            { label: 'ELITE COACHES', value: '850+', icon: Users, color: '#FF6B6B' },
-            { label: 'UPTIME', value: '99.9%', icon: ShieldCheck, color: '#6C63FF' }
-          ].map((stat, i) => (
-            <motion.div 
-              key={i}
-              variants={fadeIn}
-              className="glass-card p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-white/5 group hover:border-white/10 transition-all cursor-default"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <stat.icon className="w-4 h-4 md:w-6 md:h-6" style={{ color: stat.color }} />
-                <span className="text-[8px] md:text-[10px] font-space font-bold text-white/20 uppercase tracking-widest">SYSTEM DATA</span>
-              </div>
-              <h3 className="text-2xl md:text-4xl font-space font-black text-white mb-1">{stat.value}</h3>
-              <p className="text-[8px] md:text-[10px] font-space font-bold text-white/40 uppercase tracking-widest">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* Feature Section */}
-      <section id="features" className="relative z-10 container mx-auto px-6 py-20 md:py-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="space-y-6 md:space-y-8 text-center lg:text-left"
-          >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-[10px] font-space font-bold uppercase tracking-widest">
-              <span className="flex h-2 w-2 rounded-full bg-[#6C63FF] mr-3 animate-pulse"></span>
-              CORE FEATURES LOADED
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
+              <span className="flex h-2 w-2 rounded-full bg-[#6C63FF] animate-pulse" />
+              <span className="text-[10px] font-space font-black uppercase tracking-[0.3em] text-white/60">SQUADRON STATUS: ACTIVE</span>
             </div>
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-space font-black tracking-tighter leading-[0.9] uppercase text-white">
-              DATA DRIVEN <br className="hidden md:block"/>
-              <span className="text-secondary italic">PERFORMANCE</span>
-            </h2>
-            <p className="text-white/50 text-base md:text-lg leading-relaxed max-w-lg font-lexend mx-auto lg:mx-0">
-              Connect your biological telemetry to our high-frequency analytical engine. Every set, every beat, every breath—quantified for absolute optimization.
-            </p>
-            <div className="pt-4 md:pt-8 flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
-              <Link href="/register" className="inline-flex items-center justify-center gap-3 bg-white text-black font-space font-black px-10 py-5 rounded-3xl hover:scale-105 transition-all duration-300 uppercase text-xs tracking-widest">
-                START TRAINING NOW
-              </Link>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="relative h-[400px] md:h-[600px] rounded-[40px] md:rounded-[60px] overflow-hidden group border border-white/5 shadow-2xl"
-          >
-            <Image 
-              src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=1470" 
-              alt="Elite Athlete" 
-              fill
-              className="object-cover transition-transform duration-1000 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
             
-            <div className="absolute bottom-6 left-6 right-6 md:bottom-12 md:left-12 md:right-12 glass-strong p-6 md:p-8 rounded-[30px] md:rounded-[40px] border border-white/10 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-              <div className="flex items-center gap-3 mb-3 md:mb-4">
-                <BrainCircuit className="w-4 h-4 md:w-5 md:h-5 text-secondary" />
-                <span className="text-[8px] md:text-[10px] font-space font-bold text-secondary uppercase tracking-widest">AI INSIGHTS</span>
-              </div>
-              <p className="text-white/80 font-lexend text-xs md:text-sm leading-relaxed italic">
-                &ldquo;Real-time feedback on every rep. Build your legacy with data-driven precision.&rdquo;
-              </p>
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-space font-black tracking-tighter uppercase mb-6 leading-[0.85]">
+              BEYOND<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/40 to-[#6C63FF]">LIMITS</span>
+            </h1>
+            
+            <p className="max-w-2xl mx-auto text-lg md:text-xl font-lexend text-white/40 leading-relaxed mb-12">
+              Next-generation operational intelligence for elite athletes. 
+              Track, optimize, and dominate your mission with real-time biometric analysis.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <Link href="/register">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-12 py-6 rounded-2xl bg-[#6C63FF] text-white font-space font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/20 flex items-center gap-3 group"
+                >
+                  INITIALIZE ACCOUNT
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              </Link>
+              <button className="px-12 py-6 rounded-2xl bg-white/5 border border-white/10 text-white font-space font-black text-xs uppercase tracking-[0.3em] backdrop-blur-md hover:bg-white/10 transition-all">
+                VIEW CAPABILITIES
+              </button>
             </div>
           </motion.div>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-32 md:py-48 px-6 bg-[#050505] relative overflow-hidden text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl md:text-6xl lg:text-8xl font-space font-black text-white uppercase tracking-tighter mb-8 md:mb-12">
-            READY TO <span className="text-secondary italic">START?</span>
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-            <Link href="/register" className="bg-white text-black px-10 py-5 md:px-12 md:py-6 rounded-full font-space font-black text-xs md:text-sm uppercase tracking-[0.3em] hover:bg-[#6C63FF] hover:text-white transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)]">
-              CREATE ACCOUNT
-            </Link>
-            <Link href="/login" className="bg-white/5 text-white border border-white/10 px-10 py-5 md:px-12 md:py-6 rounded-full font-space font-black text-xs md:text-sm uppercase tracking-[0.3em] hover:bg-white/10 transition-all">
-              LOG IN
-            </Link>
+        {/* Floating Data Stats */}
+        <div className="absolute bottom-20 left-0 w-full z-20 hidden lg:block px-12">
+          <div className="max-w-7xl mx-auto flex justify-between items-end">
+            <div className="flex gap-20">
+              {[
+                { label: 'ACTIVE USERS', val: '42.8K', sub: '+12% TODAY' },
+                { label: 'SESSIONS COMPLETED', val: '1.2M', sub: 'WORLDWIDE' },
+                { label: 'COACHES READY', val: '840+', sub: 'VETTED' }
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col gap-2">
+                  <span className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.3em]">{stat.label}</span>
+                  <span className="text-4xl font-space font-black tracking-tighter">{stat.val}</span>
+                  <span className="text-[9px] font-space font-bold text-secondary uppercase tracking-widest">{stat.sub}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-4 group cursor-pointer">
+              <div className="text-right">
+                <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.3em]">SYSTEM STATUS</p>
+                <p className="text-xs font-space font-black text-white uppercase tracking-widest">OPTIMAL PERFORMANCE</p>
+              </div>
+              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#6C63FF] transition-all">
+                <Smartphone size={20} className="text-white/40 group-hover:text-white" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer className="py-12 border-t border-white/5 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-3 opacity-30 hover:opacity-100 transition-opacity cursor-default">
-            <div className="w-6 h-6 rounded bg-white/10 flex items-center justify-center">
-              <Zap className="w-3 h-3 text-white" fill="currentColor" />
+      {/* Features Section */}
+      <section id="features" className="py-40 px-6 relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-12">
+              <div className="space-y-4">
+                <h2 className="text-[10px] font-space font-black text-[#6C63FF] uppercase tracking-[0.5em]">CORE CAPABILITIES</h2>
+                <h3 className="text-5xl md:text-7xl font-space font-black uppercase tracking-tighter leading-none">
+                  TACTICAL<br />INTELLIGENCE
+                </h3>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-12">
+                {[
+                  { 
+                    icon: Activity, 
+                    title: "BIOMETRIC SYNC", 
+                    desc: "Seamlessly integrate wearable data for real-time performance tracking and recovery analysis." 
+                  },
+                  { 
+                    icon: Target, 
+                    title: "ADAPTIVE PLANS", 
+                    desc: "AI-driven workout adjustments based on your current energy levels and long-term targets." 
+                  },
+                  { 
+                    icon: ShieldCheck, 
+                    title: "ENCRYPTED COACHING", 
+                    desc: "Direct, secure communication channels with elite commanders for personalized strategy." 
+                  }
+                ].map((feat, i) => (
+                  <div key={i} className="flex gap-6 group">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#6C63FF] group-hover:border-[#6C63FF] transition-all">
+                      <feat.icon size={24} className="text-[#6C63FF] group-hover:text-white transition-colors" />
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-xl font-space font-black uppercase tracking-tight">{feat.title}</h4>
+                      <p className="text-white/40 font-lexend leading-relaxed">{feat.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <span className="text-xs font-black italic tracking-tighter text-white font-space uppercase">FITPULSE</span>
+
+            <div className="relative">
+              <div className="aspect-square rounded-[40px] glass-strong border-white/5 relative overflow-hidden p-8 shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#6C63FF]/20 to-transparent" />
+                {/* Mock UI Element */}
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-widest">MISSION LOAD</p>
+                      <p className="text-4xl font-space font-black tracking-tighter italic text-secondary">ACTIVE</p>
+                    </div>
+                    <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center">
+                      <Activity size={24} className="text-secondary animate-pulse" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="h-px bg-white/10 w-full" />
+                    <div className="grid grid-cols-2 gap-8">
+                      <div>
+                        <p className="text-[9px] font-space font-black text-white/20 uppercase tracking-widest mb-1">INTENSITY</p>
+                        <p className="text-2xl font-space font-black tracking-tight">88%</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-space font-black text-white/20 uppercase tracking-widest mb-1">STABILITY</p>
+                        <p className="text-2xl font-space font-black tracking-tight">OPTIMAL</p>
+                      </div>
+                    </div>
+                    <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                      <motion.div 
+                        animate={{ width: ['40%', '80%', '60%'] }}
+                        transition={{ duration: 5, repeat: Infinity }}
+                        className="h-full bg-secondary" 
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Decorative elements */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#6C63FF] rounded-full blur-[100px] opacity-20" />
+              <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-secondary rounded-full blur-[120px] opacity-20" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-20 px-6 border-t border-white/5 bg-[#050505]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+          <div className="flex items-center gap-3">
+            <Zap size={24} className="text-[#6C63FF]" />
+            <span className="text-xl font-space font-black tracking-tighter uppercase italic text-white/40">FITPULSE v2.4</span>
           </div>
           
-          <p className="text-[8px] md:text-[10px] font-space font-bold text-white/20 uppercase tracking-[0.3em] text-center md:text-right">
-            FITPULSE SYSTEMS © 2026 // NEURAL-LINKED PERFORMANCE // ALL RIGHTS RESERVED
+          <div className="flex gap-10 text-[10px] font-space font-black text-white/20 uppercase tracking-widest">
+            <Link href="#" className="hover:text-white transition-colors">SECURITY PROTOCOL</Link>
+            <Link href="#" className="hover:text-white transition-colors">PRIVACY POLICY</Link>
+            <Link href="#" className="hover:text-white transition-colors">TERMS OF MISSION</Link>
+          </div>
+
+          <p className="text-[10px] font-space font-bold text-white/10 uppercase tracking-[0.2em]">
+            © 2026 FITPULSE OPERATIONAL COMMAND. ALL RIGHTS RESERVED.
           </p>
         </div>
       </footer>

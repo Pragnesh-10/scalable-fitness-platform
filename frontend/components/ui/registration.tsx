@@ -1,28 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import * as LabelPrimitive from "@radix-ui/react-label";
-import * as SelectPrimitive from "@radix-ui/react-select";
 import {
-  BarChart,
   Activity,
   Eye,
   EyeOff,
-  User,
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ShieldCheck,
-  Zap
+  Zap,
+  ChevronRight,
+  ChevronLeft
 } from "lucide-react";
-import { JSX, SVGProps } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -33,16 +27,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+        destructive: "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+        outline: "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -59,222 +48,40 @@ const buttonVariants = cva(
   }
 );
 
-const Button = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentPropsWithoutRef<"button"> &
-    VariantProps<typeof buttonVariants> & {
-      asChild?: boolean;
-    }
->(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
-  return (
-    <Comp
-      className={cn(buttonVariants({ variant, size, className }))}
-      ref={ref}
-      {...props}
-    />
-  );
-});
-Button.displayName = "Button";
-
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
-      className
-    )}
-    {...props}
-  />
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm", className)} {...props} />
 ));
 Card.displayName = "Card";
 
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props}
-  />
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
 ));
 CardHeader.displayName = "CardHeader";
 
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(({ className, ...props }, ref) => (
+  <h3 ref={ref} className={cn("text-2xl font-semibold leading-none tracking-tight", className)} {...props} />
+));
+CardTitle.displayName = "CardTitle";
+
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ));
 CardContent.displayName = "CardContent";
 
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
-    {...props}
-  />
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
 ));
 CardFooter.displayName = "CardFooter";
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <CheckboxPrimitive.Root
-    ref={ref}
-    className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-      className
-    )}
-    {...props}
-  >
-    <CheckboxPrimitive.Indicator
-      className={cn("flex items-center justify-center text-current")}
-    >
-      <CheckIcon className="h-4 w-4" />
-    </CheckboxPrimitive.Indicator>
-  </CheckboxPrimitive.Root>
+const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, type, ...props }, ref) => (
+  <input type={type} className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50", className)} ref={ref} {...props} />
 ));
-Checkbox.displayName = CheckboxPrimitive.Root.displayName;
-
-const Input = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, type, ...props }, ref) => {
-  return (
-    <input
-      type={type}
-      className={cn(
-        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        className
-      )}
-      ref={ref}
-      {...props}
-    />
-  );
-});
 Input.displayName = "Input";
 
-const Label = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <LabelPrimitive.Root
-    ref={ref}
-    className={cn(
-      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-      className
-    )}
-    {...props}
-  />
+const Label = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>>(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root ref={ref} className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)} {...props} />
 ));
 Label.displayName = LabelPrimitive.Root.displayName;
-
-const Select = SelectPrimitive.Root;
-const SelectGroup = SelectPrimitive.Group;
-const SelectValue = SelectPrimitive.Value;
-
-const SelectTrigger = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      className
-    )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDownIcon className="h-4 w-4 opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-));
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
-
-const SelectContent = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className
-      )}
-      position={position}
-      {...props}
-    >
-      <SelectPrimitive.Viewport
-        className={cn(
-          "p-1",
-          position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
-        )}
-      >
-        {children}
-      </SelectPrimitive.Viewport>
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-));
-SelectContent.displayName = SelectPrimitive.Content.displayName;
-
-const SelectItem = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <CheckIcon className="h-4 w-4" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </SelectPrimitive.Item>
-));
-SelectItem.displayName = SelectPrimitive.Item.displayName;
-
-const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
-  <svg
-    fill="currentColor"
-    height="48"
-    viewBox="0 0 40 48"
-    width="40"
-    {...props}
-  >
-    <clipPath id="a">
-      <path d="m0 0h40v48h-40z" />
-    </clipPath>
-    <g clipPath="url(#a)">
-      <path d="m25.0887 5.05386-3.933-1.05386-3.3145 12.3696-2.9923-11.16736-3.9331 1.05386 3.233 12.0655-8.05262-8.0526-2.87919 2.8792 8.83271 8.8328-10.99975-2.9474-1.05385625 3.933 12.01860625 3.2204c-.1376-.5935-.2104-1.2119-.2104-1.8473 0-4.4976 3.646-8.1436 8.1437-8.1436 4.4976 0 8.1436 3.646 8.1436 8.1436 0 .6313-.0719 1.2459-.2078 1.8359l10.9227 2.9267 1.0538-3.933-12.0664-3.2332 11.0005-2.9476-1.0539-3.933-12.0659 3.233 8.0526-8.0526-2.8792-2.87916-8.7102 8.71026z" />
-      <path d="m27.8723 26.2214c-.3372 1.4256-1.0491 2.7063-2.0259 3.7324l7.913 7.9131 2.8792-2.8792z" />
-      <path d="m25.7665 30.0366c-.9886 1.0097-2.2379 1.7632-3.6389 2.1515l2.8794 10.746 3.933-1.0539z" />
-      <path d="m21.9807 32.2274c-.65.1671-1.3313.2559-2.0334.2559-.7522 0-1.4806-.102-2.1721-.2929l-2.882 10.7558 3.933 1.0538z" />
-      <path d="m17.6361 32.1507c-1.3796-.4076-2.6067-1.1707-3.5751-2.1833l-7.9325 7.9325 2.87919 2.8792z" />
-      <path d="m13.9956 29.8973c-.9518-1.019-1.6451-2.2826-1.9751-3.6862l-10.95836 2.9363 1.05385 3.933z" />
-    </g>
-  </svg>
-);
 
 interface SignupFormProps {
   onSubmit: (data: any) => Promise<void>;
@@ -283,198 +90,284 @@ interface SignupFormProps {
 }
 
 export default function SignupForm({ onSubmit, isLoading, error: externalError }: SignupFormProps) {
+  const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("athlete");
-  const [inviteKey, setInviteKey] = useState("");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    role: "user",
+    registrationKey: "",
+    fitnessGoals: "general_fitness"
   });
-  const [error, setError] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  const nextStep = () => {
+    if (step === 1 && (!form.firstName || !form.lastName || !form.email || !form.password)) {
+      setLocalError("ALL CREDENTIALS REQUIRED FOR CLEARANCE");
+      return;
+    }
+    if (step === 1 && form.password.length < 6) {
+      setLocalError("ACCESS KEY MUST BE AT LEAST 6 CHARACTERS");
+      return;
+    }
+    setLocalError("");
+    setStep(2);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setLocalError("");
     try {
       await onSubmit({
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,
         password: form.password,
-        role: role,
-        inviteKey: role === 'coach' ? inviteKey : undefined
+        role: form.role,
+        fitnessGoals: form.fitnessGoals,
+        registrationKey: form.role === 'coach' ? form.registrationKey : undefined
       });
     } catch (err: any) {
-      setError(err.message || "Registration failed");
+      setLocalError(err.message || "Registration failed");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md">
-        <form onSubmit={handleSubmit}>
-          <Card className="glass-strong border-white/10 shadow-2xl pb-0 text-white">
-            <CardHeader className="flex flex-col items-center space-y-1.5 pb-4 pt-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center shadow-lg shadow-[#6C63FF]/20 mb-2">
-                <Zap className="w-8 h-8 text-white" fill="currentColor" />
-              </div>
-              <div className="space-y-0.5 flex flex-col items-center">
-                <h2 className="text-2xl font-space font-black text-white uppercase tracking-tighter">
-                  MISSION <span className="text-secondary">ENROLLMENT</span>
-                </h2>
-                <p className="text-white/40 font-lexend text-[10px] uppercase font-bold tracking-widest">
-                  Initialize your biological profile
-                </p>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6 px-8">
-              {(error || externalError) && (
-                <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
-                  <Activity className="w-4 h-4 text-rose-500" />
-                  <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wide leading-tight">
-                    {error || externalError}
-                  </p>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="role" className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-2">CREDENTIAL TYPE</Label>
-                <Select defaultValue="athlete" onValueChange={(val) => setRole(val)}>
-                  <SelectTrigger
-                    id="role"
-                    className="bg-white/5 border-white/10 text-white h-12 rounded-2xl focus:ring-[#6C63FF]/50"
-                  >
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#0F1020] border-white/10 text-white">
-                    <SelectItem value="athlete" className="focus:bg-[#6C63FF]/20 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <User size={16} className="text-[#6C63FF]" />
-                        <span className="truncate">Athlete</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="coach" className="focus:bg-[#6C63FF]/20 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <BarChart size={16} className="text-secondary" />
-                        <span className="truncate">Coach</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {role === "coach" && (
-                <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
-                  <Label htmlFor="inviteKey" className="text-[10px] font-space font-bold text-secondary uppercase tracking-widest ml-2">AUTHORIZATION KEY</Label>
-                  <div className="relative">
-                    <Input 
-                      id="inviteKey" 
-                      placeholder="ENTER KEY" 
-                      className="bg-white/5 border-secondary/30 text-white h-12 rounded-2xl placeholder:text-white/10 uppercase font-space font-bold"
-                      value={inviteKey}
-                      onChange={(e) => setInviteKey(e.target.value)}
-                      required
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <ShieldCheck className="w-4 h-4 text-secondary" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-2">GIVEN NAME</Label>
-                  <Input 
-                    id="firstName" 
-                    className="bg-white/5 border-white/10 text-white h-12 rounded-2xl" 
-                    placeholder="FIRST" 
-                    value={form.firstName}
-                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-2">SURNAME</Label>
-                  <Input 
-                    id="lastName" 
-                    className="bg-white/5 border-white/10 text-white h-12 rounded-2xl" 
-                    placeholder="LAST" 
-                    value={form.lastName}
-                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-2">COMMUNICATION LINK</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  className="bg-white/5 border-white/10 text-white h-12 rounded-2xl" 
-                  placeholder="EMAIL@PROTOCOL.COM" 
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-2">ACCESS KEY</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    className="bg-white/5 border-white/10 text-white h-12 rounded-2xl pr-12"
-                    placeholder="••••••••"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    required
-                    minLength={6}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-0 h-full px-3 text-white/40 hover:bg-transparent hover:text-white transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <Checkbox id="terms" className="border-white/20 data-[state=checked]:bg-[#6C63FF] data-[state=checked]:border-[#6C63FF]" required />
-                <label htmlFor="terms" className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest leading-tight">
-                  I agree to the <span className="text-[#6C63FF] hover:text-white cursor-pointer transition-colors underline underline-offset-4">Terms of Engagement</span>
-                </label>
-              </div>
-
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="w-full bg-white text-black h-14 rounded-2xl font-space font-black text-xs uppercase tracking-[0.3em] hover:bg-[#6C63FF] hover:text-white transition-all shadow-xl shadow-black/20 group disabled:opacity-50"
-              >
-                {isLoading ? "INITIALIZING..." : "INITIALIZE ACCOUNT"}
-                <Activity className="w-4 h-4 ml-2 group-hover:animate-pulse" />
-              </Button>
-            </CardContent>
-            <CardFooter className="flex justify-center border-t border-white/5 !py-8">
-              <p className="text-[10px] font-space font-bold text-white/20 uppercase tracking-widest text-center">
-                ALREADY REGISTERED?{" "}
-                <Link href="/login" className="text-[#6C63FF] hover:text-white transition-colors underline underline-offset-4 ml-2">SIGN IN</Link>
-              </p>
-            </CardFooter>
-          </Card>
-        </form>
+    <div className="flex items-center justify-center min-h-screen p-4 sm:p-6 relative overflow-hidden bg-[#030303]">
+      {/* Background Orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#6C63FF] rounded-full blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.05, 0.1, 0.05] }}
+          transition={{ duration: 12, repeat: Infinity }}
+          className="absolute bottom-[-20%] left-[-10%] w-[70%] h-[70%] bg-secondary rounded-full blur-[120px]" 
+        />
       </div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-[480px] relative z-10"
+      >
+        <Card className="glass-strong border-white/10 shadow-2xl rounded-[40px] overflow-hidden">
+          <CardHeader className="pt-12 pb-8 px-10 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
+              <motion.div 
+                className="h-full bg-[#6C63FF]"
+                initial={{ width: "50%" }}
+                animate={{ width: step === 1 ? "50%" : "100%" }}
+              />
+            </div>
+            
+            <motion.div 
+              whileHover={{ rotate: 10, scale: 1.1 }}
+              className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#6C63FF] to-[#4ECDC4] flex items-center justify-center mb-8 shadow-lg shadow-[#6C63FF]/20"
+            >
+              <Zap className="w-8 h-8 text-white" fill="currentColor" />
+            </motion.div>
+            <CardTitle className="text-3xl font-space font-black uppercase tracking-tighter text-white">
+              MISSION <span className="text-secondary italic">ENROLLMENT</span>
+            </CardTitle>
+            <p className="text-white/40 font-lexend text-[10px] uppercase font-bold tracking-[0.4em] mt-3">
+              Phase {step} of 2: {step === 1 ? 'Credentials' : 'Optimization'}
+            </p>
+          </CardHeader>
+
+          <CardContent className="px-10 pb-10">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <AnimatePresence mode="wait">
+                {step === 1 ? (
+                  <motion.div 
+                    key="step1"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-5"
+                  >
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">GIVEN NAME</Label>
+                        <Input 
+                          className="bg-white/5 border-white/10 text-white h-14 rounded-2xl focus:border-[#6C63FF]/50" 
+                          placeholder="FIRST"
+                          value={form.firstName}
+                          onChange={(e) => setForm({...form, firstName: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">SURNAME</Label>
+                        <Input 
+                          className="bg-white/5 border-white/10 text-white h-14 rounded-2xl focus:border-[#6C63FF]/50" 
+                          placeholder="LAST"
+                          value={form.lastName}
+                          onChange={(e) => setForm({...form, lastName: e.target.value})}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">COMM-LINK EMAIL</Label>
+                      <Input 
+                        type="email"
+                        className="bg-white/5 border-white/10 text-white h-14 rounded-2xl focus:border-[#6C63FF]/50" 
+                        placeholder="EMAIL@PROTOCOL.COM"
+                        value={form.email}
+                        onChange={(e) => setForm({...form, email: e.target.value})}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">ACCESS KEY</Label>
+                      <div className="relative group">
+                        <Input 
+                          type={showPassword ? "text" : "password"}
+                          className="bg-white/5 border-white/10 text-white h-14 rounded-2xl focus:border-[#6C63FF]/50 pr-12" 
+                          placeholder="••••••••"
+                          value={form.password}
+                          onChange={(e) => setForm({...form, password: e.target.value})}
+                          required
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      onClick={nextStep}
+                      className="w-full bg-white text-black font-space font-black py-5 rounded-2xl shadow-xl hover:bg-[#6C63FF] hover:text-white transition-all uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 group"
+                    >
+                      PROCEED TO BIO-TARGETS
+                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    key="step2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
+                  >
+                    <div className="space-y-3">
+                      <Label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">OPERATIONAL ROLE</Label>
+                      <div className="grid grid-cols-2 gap-4">
+                        {['user', 'coach'].map((r) => (
+                          <button
+                            key={r}
+                            type="button"
+                            onClick={() => setForm({...form, role: r})}
+                            className={cn(
+                              "py-4 rounded-2xl font-space font-bold text-[10px] uppercase tracking-widest border transition-all",
+                              form.role === r 
+                                ? "bg-[#6C63FF] text-white border-[#6C63FF] shadow-lg shadow-[#6C63FF]/20" 
+                                : "bg-white/5 text-white/40 border-white/10 hover:border-white/20"
+                            )}
+                          >
+                            {r === 'user' ? 'ATHLETE' : 'COMMANDER'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
+                      {form.role === 'coach' && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-2 overflow-hidden"
+                        >
+                          <Label className="text-[10px] font-space font-bold text-secondary uppercase tracking-widest ml-1">VERIFICATION KEY</Label>
+                          <Input 
+                            className="bg-white/5 border-secondary/30 text-white h-14 rounded-2xl placeholder:text-white/10" 
+                            placeholder="INVITE-X-000"
+                            value={form.registrationKey}
+                            onChange={(e) => setForm({...form, registrationKey: e.target.value})}
+                            required
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">PRIMARY OBJECTIVE</Label>
+                      <select 
+                        className="w-full bg-white/5 border border-white/10 text-white h-14 rounded-2xl px-4 font-lexend text-sm outline-none focus:border-[#6C63FF]/50 appearance-none"
+                        value={form.fitnessGoals}
+                        onChange={(e) => setForm({...form, fitnessGoals: e.target.value})}
+                      >
+                        <option value="general_fitness" className="bg-[#030303]">GENERAL PERFORMANCE</option>
+                        <option value="weight_loss" className="bg-[#030303]">FAT OXIDATION</option>
+                        <option value="muscle_gain" className="bg-[#030303]">HYPERTROPHY</option>
+                        <option value="endurance" className="bg-[#030303]">STAMINA OPTIMIZATION</option>
+                      </select>
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                      <button 
+                        type="button" 
+                        onClick={() => setStep(1)}
+                        className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        disabled={isLoading}
+                        className="flex-1 bg-[#6C63FF] text-white font-space font-black py-5 rounded-2xl shadow-xl shadow-[#6C63FF]/20 hover:bg-[#5a52e0] transition-all uppercase tracking-[0.2em] text-[11px] disabled:opacity-50"
+                      >
+                        {isLoading ? 'ENROLLING...' : 'INITIALIZE PROTOCOL'}
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </form>
+
+            <AnimatePresence>
+              {(localError || externalError) && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="mt-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3"
+                >
+                  <Activity className="w-4 h-4 text-rose-500 shrink-0" />
+                  <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wide">
+                    {localError || externalError}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </CardContent>
+
+          <CardFooter className="px-10 pb-12 pt-0 flex justify-center border-t border-white/5 pt-10">
+            <p className="text-[10px] font-space font-bold text-white/20 uppercase tracking-[0.2em]">
+              ALREADY REGISTERED?{" "}
+              <Link href="/login" className="text-[#6C63FF] hover:text-white transition-colors underline underline-offset-4 ml-2">
+                RESTORE SESSION
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 }

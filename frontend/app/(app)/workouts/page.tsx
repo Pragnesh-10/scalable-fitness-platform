@@ -2,8 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import { Activity, Plus, Search, Timer, Zap, MoreVertical, Brain, RotateCcw, Play, CheckCircle2, ChevronDown } from 'lucide-react';
+import { 
+  Activity, 
+  Plus, 
+  Search, 
+  Timer, 
+  Zap, 
+  MoreVertical, 
+  Brain, 
+  RotateCcw, 
+  Play, 
+  CheckCircle2, 
+  ChevronDown,
+  Dumbbell,
+  Flame,
+  ArrowRight
+} from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Workout = {
   _id?: string;
@@ -23,6 +39,8 @@ export default function Workouts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { loadFromStorage } = useAuthStore();
+  const [timerActive, setTimerActive] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(105); // 01:45
 
   const fetchWorkouts = async () => {
     try {
@@ -41,6 +59,16 @@ export default function Workouts() {
     fetchWorkouts();
   }, [loadFromStorage]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    } else if (timeLeft === 0) {
+      setTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft]);
+
   const handleAddWorkout = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -58,225 +86,350 @@ export default function Workouts() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#030303] text-[#e5e2e1] pb-32">
-      {/* Top Header */}
-      <header className="fixed top-0 z-50 flex justify-between items-center w-full px-6 py-4 bg-black/40 backdrop-blur-2xl border-b border-white/5">
-        <div className="flex items-center gap-4">
-          <span className="text-xl font-black italic tracking-tighter text-white font-space uppercase">FITPULSE</span>
-        </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-[#6C63FF] hover:bg-[#5a52e0] text-white px-6 py-2 rounded-full font-space font-bold text-sm shadow-[0_0_20px_rgba(108,99,255,0.4)] transition-all flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> LOG SESSION
-        </button>
-      </header>
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
-      <main className="pt-24 px-6 max-w-5xl mx-auto space-y-12">
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  };
+
+  return (
+    <div className="min-h-screen bg-transparent text-[#e5e2e1] pb-32 relative">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
+
+      {/* Top Header */}
+      <motion.header 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed top-0 z-[60] flex justify-between items-center w-full px-12 py-6 bg-black/40 backdrop-blur-2xl border-b border-white/5"
+      >
+        <div className="flex items-center gap-4">
+          <motion.div 
+            whileHover={{ rotate: 180 }}
+            className="w-10 h-10 rounded-xl bg-[#6C63FF] flex items-center justify-center shadow-lg shadow-[#6C63FF]/30"
+          >
+            <Zap className="w-6 h-6 text-white" fill="currentColor" />
+          </motion.div>
+          <span className="text-2xl font-black italic tracking-tighter text-white font-space uppercase">OPERATIONS</span>
+        </div>
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsModalOpen(true)}
+          className="bg-white text-black px-10 py-3 rounded-2xl font-space font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center gap-3 group"
+        >
+          <Plus size={18} className="group-hover:rotate-90 transition-transform" />
+          LOG MISSION
+        </motion.button>
+      </motion.header>
+
+      <motion.main 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="pt-32 px-12 max-w-7xl mx-auto space-y-16"
+      >
         {/* Workout Tracker Header */}
-        <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div>
-            <h1 className="font-space text-5xl md:text-6xl font-black text-white uppercase tracking-tighter">
-              WORKOUT <span className="text-[#6C63FF]">TRACKER</span>
+        <motion.section variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
+          <div className="space-y-4">
+            <h1 className="font-space text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">
+              WORKOUT <br />
+              <span className="text-[#6C63FF] italic">TRACKER</span>
             </h1>
-            <p className="text-lg text-white/60 font-lexend mt-2 max-w-md">Precision tracking for peak performance athletes.</p>
+            <p className="text-white/40 font-lexend text-sm uppercase tracking-[0.3em] font-bold max-w-md">Precision telemetry for the elite cohort.</p>
           </div>
-          <div className="flex gap-4">
-            <div className="glass-card rounded-2xl p-4 flex flex-col items-center min-w-[100px]">
-              <span className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest mb-1">STREAK</span>
-              <span className="text-2xl font-space font-black text-white">12 <span className="text-xs text-secondary font-normal">DAYS</span></span>
-            </div>
+          <div className="flex gap-6">
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="glass-card rounded-[32px] p-8 flex flex-col items-center min-w-[140px] border border-white/10 shadow-2xl"
+            >
+              <span className="text-[10px] font-space font-black text-white/30 uppercase tracking-[0.4em] mb-3">STREAK</span>
+              <div className="flex items-center gap-3">
+                <span className="text-4xl font-space font-black text-white">12</span>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-space font-black text-secondary uppercase">CYCLES</span>
+                  <Activity size={14} className="text-secondary" />
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Form Check & Timer */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <motion.section variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Form Check AI */}
-          <div className="glass-card p-8 rounded-[40px] relative overflow-hidden group">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Brain className="w-5 h-5 text-secondary" />
-                  <span className="text-[10px] font-space font-bold text-secondary uppercase tracking-widest">FORM AI CHECK</span>
+          <motion.div 
+            whileHover={{ scale: 1.01 }}
+            className="glass-card p-10 rounded-[56px] relative overflow-hidden group shadow-2xl"
+          >
+            {/* Background Texture Overlay */}
+            <div className="absolute inset-0 bg-[url('/Users/ypragnesh/.gemini/antigravity/brain/debf5f57-01ca-4acb-bef9-0c4062a6d7b3/strength_realistic_tactical_1777436798332.png')] bg-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000" />
+            
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-10">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                    <span className="text-[10px] font-space font-black text-secondary uppercase tracking-[0.4em]">NEURAL FORM AI</span>
+                  </div>
+                  <h3 className="text-4xl font-space font-black text-white uppercase tracking-tighter">ELBOW STABILITY</h3>
                 </div>
-                <h3 className="text-2xl font-space font-bold text-white">ELBOW POSITION</h3>
+                <div className="bg-secondary/20 p-4 rounded-3xl border border-secondary/30">
+                  <CheckCircle2 className="w-8 h-8 text-secondary" />
+                </div>
               </div>
-              <div className="bg-[#4ECDC4]/10 p-2 rounded-full border border-[#4ECDC4]/20">
-                <CheckCircle2 className="w-5 h-5 text-[#4ECDC4]" />
+              <p className="text-white/60 font-lexend text-lg leading-relaxed mb-10">
+                "Operational data indicates excessive flare. Tuck elbows closer to the thoracic cage to maximize tricep torque."
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2">
+                  {[1,2,3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-[#030303] bg-[#1a1a1a]" />)}
+                </div>
+                <span className="text-[10px] font-space font-black text-white/30 uppercase tracking-widest">LIVE WITH 2,842 USERS</span>
               </div>
             </div>
-            <p className="text-white/60 font-lexend mb-8 leading-relaxed">Tuck your elbows closer to your body during the descent to maximize tricep engagement and protect your shoulders.</p>
-            <div className="flex items-center gap-2 text-white/40">
-              <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
-              <span className="text-[10px] font-space font-bold uppercase tracking-widest">AI MONITORING ACTIVE</span>
-            </div>
-          </div>
+          </motion.div>
 
           {/* Rest Timer */}
-          <div className="glass-card p-8 rounded-[40px] relative overflow-hidden group flex flex-col items-center justify-center text-center">
-            <div className="absolute top-6 left-6">
-              <span className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest">REST TIMER</span>
+          <motion.div 
+            whileHover={{ scale: 1.01 }}
+            className="glass-card p-10 rounded-[56px] relative overflow-hidden group flex flex-col items-center justify-center text-center shadow-2xl"
+          >
+            <div className="absolute top-10 left-10">
+              <span className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">RECOVERY PROTOCOL</span>
             </div>
-            <div className="relative mb-6">
-              <svg className="w-40 h-40 transform -rotate-90">
-                <circle className="text-white/5" strokeWidth="4" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80" />
-                <circle 
-                  className="text-[#6C63FF] transition-all duration-1000" 
-                  strokeWidth="4" 
-                  strokeDasharray="440" 
-                  strokeDashoffset="120" 
+            
+            <div className="relative mb-10 group/timer cursor-pointer">
+              <svg className="w-64 h-64 transform -rotate-90">
+                <circle className="text-white/5" strokeWidth="4" stroke="currentColor" fill="transparent" r="120" cx="128" cy="128" />
+                <motion.circle 
+                  initial={{ strokeDashoffset: 754 }}
+                  animate={{ strokeDashoffset: 754 - (754 * (timeLeft / 105)) }}
+                  className="text-[#6C63FF] shadow-[0_0_20px_#6C63FF]" 
+                  strokeWidth="6" 
+                  strokeDasharray="754" 
                   strokeLinecap="round" 
                   stroke="currentColor" 
                   fill="transparent" 
-                  r="70" 
-                  cx="80" 
-                  cy="80" 
+                  r="120" 
+                  cx="128" 
+                  cy="128" 
                 />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl font-space font-black text-white">01:45</span>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.span 
+                  key={timeLeft}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-7xl font-space font-black text-white tracking-tighter"
+                >
+                  {formatTime(timeLeft)}
+                </motion.span>
+                <span className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.3em] mt-2">REMAINING</span>
               </div>
             </div>
-            <div className="flex gap-4">
-              <button className="w-12 h-12 rounded-full glass-card flex items-center justify-center text-white hover:text-[#6C63FF] transition">
-                <RotateCcw className="w-5 h-5" />
-              </button>
-              <button className="px-8 py-3 bg-[#6C63FF] rounded-full font-space font-bold text-sm text-white shadow-lg shadow-[#6C63FF]/30">
-                START REST
-              </button>
+
+            <div className="flex gap-6 relative z-10">
+              <motion.button 
+                whileHover={{ rotate: -180, scale: 1.1 }}
+                onClick={() => { setTimeLeft(105); setTimerActive(false); }}
+                className="w-16 h-16 rounded-3xl glass-card border border-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all"
+              >
+                <RotateCcw size={24} />
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setTimerActive(!timerActive)}
+                className="px-12 py-5 bg-[#6C63FF] text-white rounded-3xl font-space font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-[#6C63FF]/30"
+              >
+                {timerActive ? 'PAUSE PROTOCOL' : 'INITIATE REST'}
+              </motion.button>
             </div>
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
 
         {/* Activity Log */}
-        <section>
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-space font-bold text-white uppercase tracking-tight">Activity Log</h2>
-            <div className="flex gap-4">
-              <button className="glass-card p-2 rounded-xl text-white/40 hover:text-white transition">
-                <Search className="w-5 h-5" />
+        <motion.section variants={itemVariants}>
+          <div className="flex justify-between items-center mb-12 px-2">
+            <div className="space-y-2">
+              <h2 className="text-4xl font-space font-black text-white uppercase tracking-tighter">Operational History</h2>
+              <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Audit log of past performance cycles</p>
+            </div>
+            <div className="flex gap-6">
+              <button className="glass-card p-4 rounded-2xl text-white/40 hover:text-white border border-white/5 transition-all">
+                <Search size={20} />
               </button>
-              <button className="glass-card px-4 py-2 rounded-xl text-white/40 hover:text-white transition flex items-center gap-2">
-                <span className="text-[10px] font-space font-bold uppercase tracking-widest">MONTHLY</span>
-                <ChevronDown className="w-4 h-4" />
+              <button className="glass-card px-8 py-4 rounded-2xl text-white font-space font-black text-[10px] uppercase tracking-[0.2em] border border-white/5 hover:border-white/20 transition-all flex items-center gap-3">
+                MONTHLY REPORT
+                <ChevronDown size={14} />
               </button>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {loading ? (
-              <div className="h-40 flex items-center justify-center text-white/40 font-space uppercase tracking-widest animate-pulse">Scanning history...</div>
+              <div className="h-40 flex items-center justify-center text-[#6C63FF] font-space font-black text-xs uppercase tracking-[0.6em] animate-pulse">Scanning Bio-Archive...</div>
             ) : workouts.length === 0 ? (
-              <div className="h-64 glass-card rounded-[40px] border border-dashed border-white/10 flex flex-col items-center justify-center text-center p-8">
-                <Activity className="w-12 h-12 text-white/10 mb-4" />
-                <h3 className="text-xl font-space font-bold text-white uppercase mb-2">No Sessions Yet</h3>
-                <p className="text-white/40 font-lexend max-w-xs mb-8">Your legacy starts here. Log your first session and begin the journey.</p>
-                <button onClick={() => setIsModalOpen(true)} className="text-[#6C63FF] font-space font-bold text-sm uppercase tracking-widest flex items-center gap-2">
-                  <Plus className="w-4 h-4" /> INITIALIZE FIRST SESSION
-                </button>
-              </div>
-            ) : (
-              workouts.map((workout, idx) => (
-                <div key={workout._id || idx} className="glass-card p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:scale-[1.01] transition-transform group cursor-pointer">
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-[#6C63FF] group-hover:bg-[#6C63FF]/10 transition-colors">
-                      <Activity className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <h4 className="text-xl font-space font-bold text-white uppercase tracking-tight">{workout.title || 'Untitled Session'}</h4>
-                      <p className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest mt-1">
-                        {workout.type} • {new Date(workout.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-12">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest mb-1">DURATION</span>
-                      <span className="text-xl font-space font-black text-white">{workout.duration} <span className="text-xs text-secondary font-normal uppercase">min</span></span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest mb-1">BURN</span>
-                      <span className="text-xl font-space font-black text-white">{workout.caloriesBurned || 0} <span className="text-xs text-[#6C63FF] font-normal uppercase">kcal</span></span>
-                    </div>
-                    <button className="text-white/20 hover:text-white transition">
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
-                  </div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="h-96 glass-card rounded-[56px] border border-dashed border-white/10 flex flex-col items-center justify-center text-center p-12 group"
+              >
+                <div className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                  <Activity size={48} className="text-white/10 group-hover:text-[#6C63FF] transition-colors" />
                 </div>
-              ))
+                <h3 className="text-3xl font-space font-black text-white uppercase mb-4 tracking-tighter">No Active History</h3>
+                <p className="text-white/40 font-lexend text-lg max-w-sm mb-10 leading-relaxed">The archive is empty. Begin your first mission to establish a bio-legacy.</p>
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => setIsModalOpen(true)} 
+                  className="bg-white text-black px-12 py-5 rounded-2xl font-space font-black text-xs uppercase tracking-[0.3em] flex items-center gap-3"
+                >
+                  <Plus size={20} /> INITIALIZE SESSION
+                </motion.button>
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6">
+                {workouts.map((workout, idx) => (
+                  <motion.div 
+                    key={workout._id || idx} 
+                    whileHover={{ x: 10, backgroundColor: 'rgba(255,255,255,0.02)' }}
+                    className="glass-card p-8 rounded-[40px] flex flex-col lg:flex-row lg:items-center justify-between gap-10 border border-white/5 hover:border-[#6C63FF]/30 transition-all group cursor-pointer relative overflow-hidden"
+                  >
+                    {/* Background Visualizer */}
+                    <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-[#6C63FF]/5 to-transparent pointer-events-none" />
+                    
+                    <div className="flex items-center gap-10 relative z-10">
+                      <div className="w-20 h-20 rounded-[28px] bg-white/5 border border-white/10 flex items-center justify-center text-[#6C63FF] group-hover:bg-[#6C63FF] group-hover:text-white transition-all shadow-xl">
+                        {workout.type === 'running' ? <Zap size={32} /> : <Dumbbell size={32} />}
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="text-3xl font-space font-black text-white uppercase tracking-tighter group-hover:text-[#6C63FF] transition-colors">
+                          {workout.title || 'BIO-MISSION'}
+                        </h4>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px] font-space font-black text-[#6C63FF] uppercase tracking-[0.3em] bg-[#6C63FF]/10 px-3 py-1 rounded-full">{workout.type}</span>
+                          <span className="text-[10px] font-space font-black text-white/30 uppercase tracking-[0.3em]">
+                            {new Date(workout.date || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-16 relative z-10 lg:pr-10">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">DURATION</p>
+                        <p className="text-3xl font-space font-black text-white tracking-tighter italic">{workout.duration} <span className="text-xs text-secondary font-normal not-italic tracking-widest">MINS</span></p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">OUTPUT</p>
+                        <p className="text-3xl font-space font-black text-white tracking-tighter italic">{workout.caloriesBurned || 0} <span className="text-xs text-[#6C63FF] font-normal not-italic tracking-widest">KCAL</span></p>
+                      </div>
+                      <motion.div 
+                        whileHover={{ scale: 1.2, x: 5 }}
+                        className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 group-hover:text-white group-hover:bg-[#6C63FF]/20 transition-all border border-white/5"
+                      >
+                        <ArrowRight size={20} />
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             )}
           </div>
-        </section>
-      </main>
+        </motion.section>
+      </motion.main>
 
       {/* Log Session Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-          <div className="glass-strong w-full max-w-md rounded-[40px] overflow-hidden animate-in fade-in zoom-in-95 duration-300">
-            <div className="p-8 border-b border-white/5 flex justify-between items-center">
-              <h2 className="text-2xl font-space font-bold text-white uppercase tracking-tight">LOG SESSION</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-white/40 hover:text-white text-2xl">&times;</button>
-            </div>
-            <form onSubmit={handleAddWorkout} className="p-8 space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">WORKOUT TITLE</label>
-                <input 
-                  type="text" 
-                  value={title} 
-                  onChange={e => setTitle(e.target.value)} 
-                  className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#6C63FF]/50 text-white font-lexend placeholder-white/20"
-                  placeholder="e.g. MORNING PUSH"
-                  required 
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">TYPE</label>
-                  <select 
-                    value={type} 
-                    onChange={e => setType(e.target.value)}
-                    className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#6C63FF]/50 text-white font-lexend appearance-none"
-                  >
-                    <option value="running">RUNNING</option>
-                    <option value="cycling">CYCLING</option>
-                    <option value="strength">STRENGTH</option>
-                    <option value="yoga">YOGA</option>
-                    <option value="hiit">HIIT</option>
-                  </select>
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-2xl">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="glass-strong w-full max-w-xl rounded-[60px] overflow-hidden border border-white/10 shadow-3xl shadow-black/80"
+            >
+              <div className="p-12 border-b border-white/5 flex justify-between items-center">
+                <div className="space-y-1">
+                  <h2 className="text-4xl font-space font-black text-white uppercase tracking-tighter italic">LOG MISSION</h2>
+                  <p className="text-[10px] font-space font-black text-white/20 uppercase tracking-[0.4em]">Manual performance data upload</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">MINUTES</label>
+                <button onClick={() => setIsModalOpen(false)} className="w-14 h-14 rounded-full border border-white/10 text-white/40 hover:text-white text-3xl transition-all flex items-center justify-center">&times;</button>
+              </div>
+              <form onSubmit={handleAddWorkout} className="p-12 space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-space font-black text-white/40 uppercase tracking-[0.4em] ml-2">MISSION CODERS</label>
                   <input 
-                    type="number" 
-                    value={duration} 
-                    onChange={e => setDuration(e.target.value)} 
-                    className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#6C63FF]/50 text-white font-lexend"
-                    placeholder="45"
+                    type="text" 
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)} 
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight placeholder-white/10 transition-all"
+                    placeholder="e.g. ALPHA_STRENGTH"
                     required 
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-space font-bold text-white/40 uppercase tracking-widest ml-1">CALORIES (OPTIONAL)</label>
-                <input 
-                  type="number" 
-                  value={calories} 
-                  onChange={e => setCalories(e.target.value)} 
-                  className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#6C63FF]/50 text-white font-lexend"
-                  placeholder="350"
-                />
-              </div>
-              <div className="pt-4">
-                <button type="submit" className="w-full bg-[#6C63FF] hover:bg-[#5a52e0] text-white font-space font-black text-sm py-5 rounded-2xl transition-all shadow-lg shadow-[#6C63FF]/30 uppercase tracking-widest">
-                  UPLOAD PERFORMANCE
-                </button>
-              </div>
-            </form>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-space font-black text-white/40 uppercase tracking-[0.4em] ml-2">PROTOCOL TYPE</label>
+                    <select 
+                      value={type} 
+                      onChange={e => setType(e.target.value)}
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-white font-space font-black uppercase tracking-widest appearance-none transition-all"
+                    >
+                      <option value="running">RUNNING</option>
+                      <option value="strength">STRENGTH</option>
+                      <option value="yoga">YOGA</option>
+                      <option value="hiit">HIIT</option>
+                    </select>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-space font-black text-white/40 uppercase tracking-[0.4em] ml-2">TIME CYCLES (MINS)</label>
+                    <input 
+                      type="number" 
+                      value={duration} 
+                      onChange={e => setDuration(e.target.value)} 
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight"
+                      placeholder="45"
+                      required 
+                    />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-space font-black text-white/40 uppercase tracking-[0.4em] ml-2">ENERGY OUTPUT (KCAL)</label>
+                  <input 
+                    type="number" 
+                    value={calories} 
+                    onChange={e => setCalories(e.target.value)} 
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-3xl px-8 py-5 focus:outline-none focus:border-[#6C63FF]/50 text-xl text-white font-space font-black tracking-tight"
+                    placeholder="350"
+                  />
+                </div>
+                <div className="pt-8">
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit" 
+                    className="w-full bg-[#6C63FF] text-white font-space font-black text-xs py-6 rounded-[30px] transition-all shadow-3xl shadow-[#6C63FF]/40 uppercase tracking-[0.4em]"
+                  >
+                    AUTHORIZE BIO-LOG
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }
